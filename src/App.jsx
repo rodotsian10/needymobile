@@ -302,7 +302,7 @@ export default function App() {
           default={{ x: 300, y: 150, width: 400, height: 500 }}
           style={{ zIndex: windows.director.zIndex }}
           onMouseDown={() => focusWindow('director')}
-          enableResizing={true}
+          enableResizing={false}
           className="os-window director-window"
         >
           <img src="/assets/images/border/window-jinebig.png" className="director-bg" alt="director-bg" style={{ width: '100%', height: '100%', objectFit: 'fill' }} />
