@@ -11,8 +11,9 @@ const useAppStore = create((set) => ({
   // Windows State
   windows: {
     ameCam: { isOpen: true, zIndex: 1 },
-    jine: { isOpen: false, zIndex: 2 },
-    status: { isOpen: true, zIndex: 3 }
+    jine: { isOpen: true, zIndex: 2 },
+    status: { isOpen: true, zIndex: 3 },
+    director: { isOpen: false, zIndex: 4 }
   },
   
   // Window Controls
@@ -54,12 +55,15 @@ const useAppStore = create((set) => ({
   
   // Ame Transform State
   petState: 'idle', // 'idle' | 'gaming' | 'transforming' | 'kangel'
-  setPetState: (newState) => set((state) => {
-    if (newState === 'kangel') {
-      return { petState: newState, theme: 'dark' };
-    }
-    return { petState: newState };
-  })
+  petAction: '0/0/0/0',
+  setPetState: (state) => set({ 
+    petState: state,
+    petAction: state === 'idle' ? '0/0/0/0' : 
+               state === 'kangel' ? 'stream/0/0' : 
+               state === 'transforming_dark' ? 'transformation_dark' : 'transformation',
+    theme: state === 'kangel' ? 'dark' : 'normal'
+  }),
+  setPetAction: (action) => set({ petAction: action })
 }));
 
 export default useAppStore;

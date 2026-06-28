@@ -46,10 +46,71 @@ export default function App() {
     isBooting, windows, 
     openWindow, closeWindow, focusWindow,
     messages, addMessage,
-    petState, setPetState
+    petState, petAction, setPetState, setPetAction
   } = useAppStore();
 
   const [input, setInput] = useState('');
+
+  const AME_MOTIONS = [
+    { label: '평온 (기본)', path: '0/0/0/0' },
+    { label: '기분 좋음 (방긋)', path: '0/0/0/1' },
+    { label: '평온 (호감도 보통)', path: '0/1/0/0' },
+    { label: '기분 좋음 (호감도 보통)', path: '0/1/0/1' },
+    { label: '평온 (호감도 최고)', path: '0/2/0/0' },
+    { label: '기분 좋음 (호감도 최고)', path: '0/2/0/1' },
+    { label: '평온 (우울함)', path: '0/0/1/0' },
+    { label: '기분 좋음 (우울함)', path: '0/0/1/1' },
+    { label: '평온 (죽은 눈)', path: '0/0/2/0' },
+    { label: '불안 (다리떨기)', path: '1/0/0/0' },
+    { label: '짜증 (화냄)', path: '1/0/0/1' },
+    { label: '불안 (호감도 보통)', path: '1/1/0/0' },
+    { label: '짜증 (호감도 보통)', path: '1/1/0/1' },
+    { label: '불안 (호감도 최고)', path: '1/2/0/0' },
+    { label: '짜증 (호감도 최고)', path: '1/2/0/1' },
+    { label: '불안 (우울함)', path: '1/0/1/0' },
+    { label: '짜증 (우울함)', path: '1/0/1/1' },
+    { label: '불안 (죽은 눈)', path: '1/0/2/0' },
+    { label: '짜증 (죽은 눈)', path: '1/0/2/1' },
+    { label: '헤드폰 (음악)', path: '-1/-1/-1/0' },
+    { label: '광기 (발작)', path: '1/-1/-1/0' },
+    { label: '구토', path: '1/-1/-1/1' },
+    { label: '게임 중', path: '-1/0/0/0' },
+    { label: '영화 감상', path: '-1/0/0/1' },
+    { label: '게임 중 (호감도 보통)', path: '-1/1/0/0' },
+    { label: '영화 감상 (호감도 보통)', path: '-1/1/0/1' },
+    { label: '게임 중 (호감도 최고)', path: '-1/2/0/0' },
+    { label: '게임 중 (죽은 눈)', path: '-1/0/2/0' },
+    { label: '붉은 변신 (특수)', path: 'transformation_dark' }
+  ];
+
+  const KANGEL_MOTIONS = [
+    { label: '방송 대기 (1)', path: 'stream/0/0' },
+    { label: '멍때리기', path: 'stream/1/0' },
+    { label: '메이크업준비', path: 'stream/6/0' },
+    { label: '제품소개', path: 'stream/6/1' },
+    { label: '화장중', path: 'stream/6/2' },
+    { label: 'ASMR (속삭임)', path: 'stream/7/0' },
+    { label: '마이크 핥기', path: 'stream/7/2' },
+    { label: '노래 방송', path: 'stream/8/0' },
+    { label: '방방이', path: 'stream/9/0' },
+    { label: '인사', path: 'stream/51/0' },
+    { label: '입꼬리내리기', path: 'stream/52/0' },
+    { label: '입꼬리올리기', path: 'stream/53/0' },
+    { label: '진정해', path: 'stream/54/0' },
+    { label: '아닙니다!', path: 'stream/57/0' },
+    { label: '기도', path: 'stream/44/1' },
+    { label: '박사!', path: 'stream/32/0' },
+    { label: '콜라뿜기', path: 'stream/5/2' },
+    { label: '거기 너!', path: 'stream/14/0' },
+    { label: '아이스크림 먹방', path: 'stream/27/0' },
+    { label: '공포 방송 (1)', path: 'stream/_dame/horror/0' },
+    { label: '음모론', path: 'stream/_dame/horror/1' },
+    { label: '교주', path: 'stream/_dame/kyouso/0' },
+    { label: '광기 폭주', path: 'stream/_dame/craziness/0' },
+    { label: '구토', path: 'stream/_dame/vomiting/0' },
+    { label: '은버튼 리액션', path: 'stream/_dame/100ksliver/0' },
+    { label: '멘붕 (방송사고)', path: 'stream/_dame/b/0' }
+  ];
 
   // Start BGM after boot
   useEffect(() => {
@@ -102,6 +163,9 @@ export default function App() {
         <div className="icon" onClick={() => openWindow('status')}>
           <img src="/assets/images/icons/task.png" alt="icon" style={{width: 60, height: 60}}/><br/>Task Manager
         </div>
+        <div className="icon" onClick={() => openWindow('director')}>
+          <img src="/assets/images/icons/calendar.png" alt="icon" style={{width: 60, height: 60}}/><br/>Director
+        </div>
       </div>
 
       {/* Ame Webcam Window */}
@@ -117,10 +181,10 @@ export default function App() {
           <div className="window-drag-area"></div>
           {/* Window Title */}
           <div className="window-title-text">■ webcam</div>
-          <button className="window-close-btn" style={{ right: '5px', top: '5px' }} onClick={() => closeWindow('ameCam')}></button>
+          <button className="window-close-btn" style={{ right: '12px', top: '14px' }} onClick={() => closeWindow('ameCam')}></button>
           <div className="window-content ame-content">
             <AnimatedPet />
-            {petState !== 'kangel' && petState !== 'transforming' && (
+            {petState === 'idle' && (
               <button className="transform-btn" onClick={handleTransform}>
                 on Air
               </button>
@@ -146,7 +210,7 @@ export default function App() {
           <div className="window-drag-area"></div>
           {/* Window Title */}
           <div className="window-title-text">■ JINE</div>
-          <button className="window-close-btn" style={{ right: '5px', top: '5px' }} onClick={() => closeWindow('jine')}></button>
+          <button className="window-close-btn" style={{ right: '12px', top: '14px' }} onClick={() => closeWindow('jine')}></button>
           <div className="window-content jine-content">
             <div className="jine-chat">
               {messages.map(msg => (
@@ -182,7 +246,7 @@ export default function App() {
           {/* Window Title */}
           <div className="window-title-text" style={{ color: '#fff', top: '4px' }}>■ 작업 관리자</div>
           {/* Close button relative to Task Manager layout */}
-          <button className="window-close-btn" style={{ right: '5px', top: '5px' }} onClick={() => closeWindow('status')}></button>
+          <button className="window-close-btn" style={{ right: '10px', top: '4px' }} onClick={() => closeWindow('status')}></button>
           
           <div className="window-content task-manager-content">
             {/* Date (replaces Followers) */}
@@ -228,6 +292,61 @@ export default function App() {
                 </div>
               </div>
             </div>
+          </div>
+        </Rnd>
+      )}
+
+      {/* Director Window */}
+      {windows.director.isOpen && (
+        <Rnd
+          default={{ x: 300, y: 150, width: 400, height: 500 }}
+          style={{ zIndex: windows.director.zIndex }}
+          onMouseDown={() => focusWindow('director')}
+          enableResizing={true}
+          className="os-window director-window"
+        >
+          <img src="/assets/images/border/window-jinebig.png" className="director-bg" alt="director-bg" style={{ width: '100%', height: '100%', objectFit: 'fill' }} />
+          <div className="window-drag-area" style={{ background: 'transparent', height: '24px' }}></div>
+          {/* Window Title */}
+          <div className="window-title-text" style={{ color: '#fff', top: '4px', left: '10px' }}>모션 디렉터</div>
+          <button className="window-close-btn" style={{ right: '6px', top: '4px', color: '#fff' }} onClick={() => closeWindow('director')}></button>
+          
+          <div className="director-content">
+            <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#a372f5', background: 'rgba(255,255,255,0.7)', padding: '5px' }}>
+              {petState === 'idle' ? '아메쨩 모션' : petState === 'kangel' ? '초텐쨩 모션' : '대기 중'}
+            </h3>
+            
+            {petState.startsWith('transforming') ? (
+              <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
+                <p>변신 중입니다...</p>
+                <p>조작할 수 없습니다.</p>
+                <button 
+                  className="retro-btn" 
+                  style={{ marginTop: '15px', color: '#000' }}
+                  onClick={() => setPetState('kangel')}
+                >
+                  변신 스킵
+                </button>
+              </div>
+            ) : (
+              <div className="motion-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                {(petState === 'idle' ? AME_MOTIONS : KANGEL_MOTIONS).map(motion => (
+                  <button 
+                    key={motion.path}
+                    className={`retro-btn ${petAction === motion.path ? 'active' : ''}`}
+                    onClick={() => {
+                      if (motion.path === 'transformation_dark') {
+                        setPetState('transforming_dark');
+                      } else {
+                        setPetAction(motion.path);
+                      }
+                    }}
+                  >
+                    {motion.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </Rnd>
       )}

@@ -1,37 +1,63 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import useAppStore from '../store/useAppStore';
-
-const IDLE_FRAMES = Array.from({length: 30}, (_, i) => `/assets/images/ame/sprites/0/0/0/0/${i}.png`);
-const TRANSFORM_FRAMES = Array.from({length: 191}, (_, i) => `/assets/images/ame/transformation/${i}.png`);
-const KANGEL_FRAMES = Array.from({length: 2}, (_, i) => `/assets/images/ame/sprites/stream/0/0/${i}.png`);
+import spritesManifest from '../store/sprites.json';
 
 export default function AnimatedPet() {
-  const { petState, setPetState } = useAppStore();
+  const { petState, petAction, setPetState } = useAppStore();
   const canvasRef = useRef(null);
   const imagesRef = useRef({});
+  const [framesLoaded, setFramesLoaded] = useState(false);
 
-  // Preload images
+  const getSpritePaths = () => {
+    const isTransforming = petState === 'transforming' || petState === 'transforming_dark';
+    if (isTransforming) {
+      const isDark = petState === 'transforming_dark';
+      const folder = isDark ? 'transformation_dark' : 'transformation';
+      // Both transformation and transformation_dark have 191 frames (0.png to 190.png)
+      return Array.from({ length: 191 }, (_, i) => `/assets/images/ame/${folder}/${i}.png`);
+    } else {
+      const frameCount = spritesManifest[petAction] || 1;
+      return Array.from({ length: frameCount }, (_, i) => `/assets/images/ame/sprites/${petAction}/${i}.png`);
+    }
+  };
+
+  // Preload frames for current action
   useEffect(() => {
-    const allFrames = [...IDLE_FRAMES, ...TRANSFORM_FRAMES, ...KANGEL_FRAMES];
-    allFrames.forEach(src => {
+    setFramesLoaded(false);
+    const paths = getSpritePaths();
+    let loadedCount = 0;
+
+    paths.forEach(src => {
       if (!imagesRef.current[src]) {
         const img = new Image();
         img.src = src;
+        img.onload = () => {
+          loadedCount++;
+          if (loadedCount === paths.length) setFramesLoaded(true);
+        };
+        img.onerror = () => {
+          loadedCount++;
+          if (loadedCount === paths.length) setFramesLoaded(true);
+        };
         imagesRef.current[src] = img;
+      } else {
+        loadedCount++;
+        if (loadedCount === paths.length) setFramesLoaded(true);
       }
     });
-  }, []);
+  }, [petAction, petState]);
 
   useEffect(() => {
-    let currentFrames = IDLE_FRAMES;
+    if (!framesLoaded) return;
+    
+    const currentFrames = getSpritePaths();
     let fps = 10;
     
-    if (petState === 'transforming') {
-      currentFrames = TRANSFORM_FRAMES;
+    const isTransforming = petState === 'transforming' || petState === 'transforming_dark';
+    if (isTransforming) {
       fps = 24; // Transform sequence is long, needs higher fps
     } else if (petState === 'kangel') {
-      currentFrames = KANGEL_FRAMES;
-      fps = 2; // Stream idle is very slow (2 frames)
+      fps = currentFrames.length <= 4 ? 2 : 10; // Slow down small loops
     }
 
     const canvas = canvasRef.current;
@@ -54,8 +80,9 @@ export default function AnimatedPet() {
           
           let drawX, drawY, drawW, drawH;
 
-          if (petState === 'transforming') {
-            // 변신 모션: 좌우/위아래 꽉 차게 스트레치 (비율 무시하고 정확히 맞춤)
+          const isTransforming = petState === 'transforming' || petState === 'transforming_dark';
+          if (isTransforming) {
+            // 변신 모션: 좌우/위아래 꽉 차게 스트레치
             drawW = canvas.width;
             drawH = canvas.height;
             drawX = 0;
@@ -79,7 +106,8 @@ export default function AnimatedPet() {
         frameIdx++;
         
         // Handle end of transformation sequence
-        if (petState === 'transforming' && frameIdx >= currentFrames.length) {
+        const isTransforming = petState === 'transforming' || petState === 'transforming_dark';
+        if (isTransforming && frameIdx >= currentFrames.length) {
           setPetState('kangel');
           return; // Stop rendering until state updates
         }
@@ -95,7 +123,7 @@ export default function AnimatedPet() {
     animationId = requestAnimationFrame(render);
 
     return () => cancelAnimationFrame(animationId);
-  }, [petState, setPetState]);
+  }, [petState, petAction, framesLoaded, setPetState]);
 
   return (
     <div style={{ 
@@ -106,9 +134,22 @@ export default function AnimatedPet() {
       justifyContent: 'center',
       backgroundImage: "url('/assets/images/ame/bg/0.png')",
       backgroundSize: 'cover',
-      backgroundPosition: 'center'
+      backgroundPosition: 'center',
+      position: 'relative'
     }}>
-      <canvas ref={canvasRef} width={800} height={800} style={{ width: '100%', height: '100%', objectFit: petState === 'transforming' ? 'fill' : 'contain' }} />
+      {/* 영화 감상 모션일 때 전체 화면을 어둡게 덮는 오버레이 */}
+      {(petAction === '-1/0/0/1' || petAction === '-1/1/0/1') && (
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(0, 0, 0, 0.65)',
+          zIndex: 1
+        }} />
+      )}
+      <canvas ref={canvasRef} width={800} height={800} style={{ width: '100%', height: '100%', objectFit: petState.startsWith('transforming') ? 'fill' : 'contain', zIndex: 2, position: 'relative' }} />
     </div>
   );
 }
