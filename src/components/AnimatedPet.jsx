@@ -56,6 +56,8 @@ export default function AnimatedPet() {
     const isTransforming = petState === 'transforming' || petState === 'transforming_dark';
     if (isTransforming) {
       fps = 24; // Transform sequence is long, needs higher fps
+    } else if (petAction === 'stream/27/0') {
+      fps = 4; // Slow down ice cream eating
     } else if (petState === 'kangel') {
       fps = currentFrames.length <= 4 ? 2 : 10; // Slow down small loops
     }
