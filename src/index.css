@@ -391,7 +391,7 @@ body, html, #root {
 /* Settings Window Specific Styles */
 .settings-content-wrapper {
   padding: 0px 10px 10px 10px;
-  height: 100%;
+  flex: 1;
   box-sizing: border-box;
   overflow-y: auto;
 }
