@@ -40,33 +40,6 @@ const BootScreen = () => {
   return (
     <div className="boot-screen">
       <pre>{text}</pre>
-
-      {/* Notepad Window */}
-      {windows.notepad && windows.notepad.isOpen && (
-        <Rnd
-          default={{ x: 150, y: 150, width: 400, height: 400 }}
-          style={{ zIndex: windows.notepad.zIndex, backgroundColor: '#fff', border: '2px solid #dfdfdf', borderTopColor: '#fff', borderLeftColor: '#fff', borderRightColor: '#000', borderBottomColor: '#000' }}
-          onMouseDown={() => focusWindow('notepad')}
-          enableResizing={true}
-          dragHandleClassName="window-drag-area"
-          className="os-window"
-        >
-          {/* Classic Windows Title Bar */}
-          <div className="window-drag-area" style={{ backgroundColor: '#000080', height: '24px', width: '100%', position: 'relative' }}>
-            <span style={{ color: '#fff', marginLeft: '5px', fontSize: '12px', lineHeight: '24px', fontFamily: 'DinkieBitmap, sans-serif' }}>Notepad</span>
-            <button 
-              style={{ position: 'absolute', right: '2px', top: '2px', width: '20px', height: '20px', backgroundColor: '#dfdfdf', border: '1px solid #fff', borderBottomColor: '#000', borderRightColor: '#000', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}
-              onClick={() => { playCloseSound(); closeWindow('notepad'); }}
-            >
-              X
-            </button>
-          </div>
-          
-          <div className="window-content" style={{ height: 'calc(100% - 24px)', boxSizing: 'border-box' }}>
-            <NotepadApp />
-          </div>
-        </Rnd>
-      )}
     </div>
   );
 };
@@ -322,6 +295,33 @@ export default function App() {
           
           <div className="window-content jine-content settings-content-wrapper">
             <SettingsApp />
+          </div>
+        </Rnd>
+      )}
+
+      {/* Notepad Window */}
+      {windows.notepad && windows.notepad.isOpen && (
+        <Rnd
+          default={{ x: 150, y: 150, width: 400, height: 400 }}
+          style={{ zIndex: windows.notepad.zIndex, backgroundColor: '#fff', border: '2px solid #dfdfdf', borderTopColor: '#fff', borderLeftColor: '#fff', borderRightColor: '#000', borderBottomColor: '#000' }}
+          onMouseDown={() => focusWindow('notepad')}
+          enableResizing={true}
+          dragHandleClassName="window-drag-area"
+          className="os-window"
+        >
+          {/* Classic Windows Title Bar */}
+          <div className="window-drag-area" style={{ backgroundColor: '#000080', height: '24px', width: '100%', position: 'relative' }}>
+            <span style={{ color: '#fff', marginLeft: '5px', fontSize: '12px', lineHeight: '24px', fontFamily: 'DinkieBitmap, sans-serif' }}>Notepad</span>
+            <button 
+              style={{ position: 'absolute', right: '2px', top: '2px', width: '20px', height: '20px', backgroundColor: '#dfdfdf', border: '1px solid #fff', borderBottomColor: '#000', borderRightColor: '#000', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}
+              onClick={() => { playCloseSound(); closeWindow('notepad'); }}
+            >
+              X
+            </button>
+          </div>
+          
+          <div className="window-content" style={{ height: 'calc(100% - 24px)', boxSizing: 'border-box' }}>
+            <NotepadApp />
           </div>
         </Rnd>
       )}
