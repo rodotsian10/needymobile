@@ -87,6 +87,7 @@ export default function App() {
 
   const KANGEL_MOTIONS = [
     { label: '방송 대기 (1)', path: 'stream/0/0' },
+    { label: '게임 중', path: 'stream/18/0' },
     { label: '멍때리기', path: 'stream/1/0' },
     { label: '메이크업준비', path: 'stream/6/0' },
     { label: '제품소개', path: 'stream/6/1' },

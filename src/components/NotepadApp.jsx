@@ -64,7 +64,7 @@ export default function NotepadApp() {
     if (petState === 'idle') {
       setPetAction('-1/1/0/0'); // Ame gaming (normal)
     } else if (petState === 'kangel') {
-      setPetAction('stream/11/0'); // KAngel smartphone
+      setPetAction('stream/18/0'); // KAngel gaming
     }
 
     // Revert after 2 seconds of inactivity
