@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Rnd } from 'react-rnd';
 import useAppStore from './store/useAppStore';
 import AnimatedPet from './components/AnimatedPet';
+import SettingsApp from './components/SettingsApp';
 import './index.css';
 import { playOpenSound, playCloseSound, playExecuteSound, playJineSendSound, playTransformSound, stopTransformSound, playEndHaishinSound } from './utils/audio';
 
@@ -171,8 +172,13 @@ export default function App() {
         <div className="icon" onClick={() => { playOpenSound(); openWindow('status'); }}>
           <img src="/assets/images/icons/task.png" alt="icon" style={{width: 60, height: 60}}/><br/>Task Manager
         </div>
-        <div className="icon" onClick={() => { playOpenSound(); openWindow('director'); }}>
-          <img src="/assets/images/icons/calendar.png" alt="icon" style={{width: 60, height: 60}}/><br/>Director
+        {settings.directorEnabled && (
+          <div className="icon" onClick={() => { playOpenSound(); openWindow('director'); }}>
+            <img src="/assets/images/icons/calendar.png" alt="icon" style={{width: 60, height: 60}}/><br/>Director
+          </div>
+        )}
+        <div className="icon" onClick={() => { playOpenSound(); openWindow('settings'); }}>
+          <img src="/assets/images/jine/button_gear.png" alt="icon" style={{width: 60, height: 60, imageRendering: 'pixelated' }}/><br/>Settings
         </div>
       </div>
 
@@ -238,6 +244,27 @@ export default function App() {
               />
               <button onClick={handleSend}>전송</button>
             </div>
+          </div>
+        </Rnd>
+      )}
+
+      {/* Settings Window */}
+      {windows.settings.isOpen && (
+        <Rnd
+          default={{ x: 300, y: 150, width: 350, height: 450 }}
+          style={{ zIndex: windows.settings.zIndex }}
+          onMouseDown={() => focusWindow('settings')}
+          enableResizing={false}
+          dragHandleClassName="window-drag-area"
+          className="os-window settings-window"
+        >
+          <img src="/assets/images/jine/window_settings.png" className="settings-bg" alt="settings-bg" style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: -1, objectFit: 'fill' }} onError={(e) => { e.target.src = '/assets/images/border/window-jinebig.png' }} />
+          <div className="window-drag-area"></div>
+          <div className="window-title-text" style={{ color: '#fff', top: '10px' }}>■ Settings</div>
+          <button className="window-close-btn" style={{ right: '12px', top: '14px' }} onClick={() => { playCloseSound(); closeWindow('settings'); }}></button>
+          
+          <div className="window-content settings-content" style={{ padding: '40px 10px 10px 10px', height: '100%', boxSizing: 'border-box' }}>
+            <SettingsApp />
           </div>
         </Rnd>
       )}

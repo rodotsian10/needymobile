@@ -25,7 +25,8 @@ const useAppStore = create((set) => ({
     ameCam: { isOpen: true, zIndex: 1 },
     jine: { isOpen: true, zIndex: 2 },
     status: { isOpen: true, zIndex: 3 },
-    director: { isOpen: false, zIndex: 4 }
+    director: { isOpen: false, zIndex: 4 },
+    settings: { isOpen: false, zIndex: 5 }
   },
   
   // Window Controls
