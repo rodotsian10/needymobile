@@ -12,6 +12,7 @@ const useAppStore = create((set) => ({
   settings: {
     sfxEnabled: true,
     bgmEnabled: true,
+    bgmTrack: '19 Angel rests.mp3',
     volume: 50,
     directorEnabled: false,
     autoMotionEnabled: true,

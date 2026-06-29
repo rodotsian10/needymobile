@@ -113,16 +113,42 @@ export default function App() {
     { label: '멘붕 (방송사고)', path: 'stream/_dame/b/0' }
   ];
 
-  // Start BGM after boot
+  const bgmRef = React.useRef(null);
+
+  // Start and handle BGM track change
   useEffect(() => {
-    if (!isBooting) {
-      const bgm = new Audio('/assets/audio/19 Angel rests.mp3');
-      bgm.loop = true;
-      bgm.volume = 0.3;
-      bgm.play().catch(() => {});
-      return () => { bgm.pause(); };
+    if (isBooting) return;
+    
+    if (bgmRef.current) {
+      bgmRef.current.pause();
     }
-  }, [isBooting]);
+    
+    const audio = new Audio(`/assets/audio/${settings.bgmTrack}`);
+    audio.loop = true;
+    bgmRef.current = audio;
+    
+    if (settings.bgmEnabled) {
+      audio.volume = (settings.volume / 100) * 0.3;
+      audio.play().catch(() => {});
+    }
+
+    return () => {
+      if (bgmRef.current) bgmRef.current.pause();
+    };
+  }, [isBooting, settings.bgmTrack]);
+
+  // Handle volume and play/pause dynamically
+  useEffect(() => {
+    if (!bgmRef.current) return;
+    
+    bgmRef.current.volume = (settings.volume / 100) * 0.3;
+    
+    if (settings.bgmEnabled) {
+      bgmRef.current.play().catch(() => {});
+    } else {
+      bgmRef.current.pause();
+    }
+  }, [settings.bgmEnabled, settings.volume]);
 
     useEffect(() => {
     if (petState === 'kangel' || petState === 'idle') {

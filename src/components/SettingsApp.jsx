@@ -26,16 +26,31 @@ export default function SettingsApp() {
           </button>
         </div>
 
-        {/* BGM Toggle */}
-        <div className="setting-item" >
-          <span>배경음악 (BGM)</span>
-          <button 
-            className={`toggle-btn \${settings.bgmEnabled ? 'on' : 'off'}`}
-            onClick={() => handleToggle('bgmEnabled')}
-            
+        {/* BGM Toggle & Select */}
+        <div className="setting-item col">
+          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+            <span>배경음악 (BGM)</span>
+            <button 
+              className={`toggle-btn ${settings.bgmEnabled ? 'on' : 'off'}`}
+              onClick={() => handleToggle('bgmEnabled')}
+            >
+              {settings.bgmEnabled ? 'ON' : 'OFF'}
+            </button>
+          </div>
+          <select 
+            className="setting-input" 
+            value={settings.bgmTrack}
+            onChange={(e) => updateSettings({ bgmTrack: e.target.value })}
+            style={{ marginTop: '5px', fontFamily: 'PixelMplus10' }}
           >
-            {settings.bgmEnabled ? 'ON' : 'OFF'}
-          </button>
+            <option value="19 Angel rests.mp3">19 Angel rests (디폴트)</option>
+            <option value="bgmtest.wav">Needy Girl Overdose (메인)</option>
+            <option value="event_happy.wav">Happy Event</option>
+            <option value="event_kincho.wav">Tension Event</option>
+            <option value="85.2.wav">85.2 (로파이)</option>
+            <option value="bank.wav">Bank</option>
+            <option value="desire.wav">Desire (인터넷 엔젤)</option>
+          </select>
         </div>
 
         {/* Director App Visible Toggle */}
