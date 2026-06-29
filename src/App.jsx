@@ -330,7 +330,7 @@ export default function App() {
             <div className="status-row">
               <img src="/assets/images/task_manager/icon_status_stress.png" alt="Volume" className="status-icon" />
               <div className="status-info" style={{ flex: 1 }}>
-                <div className="status-label">Volume</div>
+                <div className="status-label">BGM Vol</div>
                 <div className="status-value" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                   <div>{settings.volume}<span className="status-slash">/100</span></div>
                   <div 
@@ -377,14 +377,54 @@ export default function App() {
                 </div>
               </div>
             </div>
-            {/* Affection */}
+            {/* SFX Volume */}
             <div className="status-row">
-              <img src="/assets/images/task_manager/icon_status_love.png" alt="Affection" className="status-icon" />
+              <img src="/assets/images/task_manager/icon_status_love.png" alt="SFX Volume" className="status-icon" />
               <div className="status-info" style={{ flex: 1 }}>
-                <div className="status-label">Affection</div>
+                <div className="status-label">SFX Vol</div>
                 <div className="status-value" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                  <div>50<span className="status-slash">/100</span></div>
-                  <div className="progress-bar-container"><div className="progress-bar-fill affection-fill" style={{ width: '50%' }}></div></div>
+                  <div>{settings.sfxVolume}<span className="status-slash">/100</span></div>
+                  <div 
+                    className="progress-bar-container" 
+                    style={{ cursor: 'pointer' }}
+                    onMouseDown={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+                      const newVolume = Math.round((x / rect.width) * 100);
+                      updateSettings({ sfxVolume: newVolume });
+                      
+                      const onMouseMove = (moveEvent) => {
+                        const moveX = Math.max(0, Math.min(moveEvent.clientX - rect.left, rect.width));
+                        updateSettings({ sfxVolume: Math.round((moveX / rect.width) * 100) });
+                      };
+                      const onMouseUp = () => {
+                        window.removeEventListener('mousemove', onMouseMove);
+                        window.removeEventListener('mouseup', onMouseUp);
+                      };
+                      window.addEventListener('mousemove', onMouseMove);
+                      window.addEventListener('mouseup', onMouseUp);
+                    }}
+                    onTouchStart={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const touch = e.touches[0];
+                      const x = Math.max(0, Math.min(touch.clientX - rect.left, rect.width));
+                      updateSettings({ sfxVolume: Math.round((x / rect.width) * 100) });
+                      
+                      const onTouchMove = (moveEvent) => {
+                        const moveTouch = moveEvent.touches[0];
+                        const moveX = Math.max(0, Math.min(moveTouch.clientX - rect.left, rect.width));
+                        updateSettings({ sfxVolume: Math.round((moveX / rect.width) * 100) });
+                      };
+                      const onTouchEnd = () => {
+                        window.removeEventListener('touchmove', onTouchMove);
+                        window.removeEventListener('touchend', onTouchEnd);
+                      };
+                      window.addEventListener('touchmove', onTouchMove);
+                      window.addEventListener('touchend', onTouchEnd);
+                    }}
+                  >
+                    <div className="progress-bar-fill affection-fill" style={{ width: `${settings.sfxVolume}%` }}></div>
+                  </div>
                 </div>
               </div>
             </div>
