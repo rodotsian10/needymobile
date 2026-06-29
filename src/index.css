@@ -217,12 +217,13 @@ body, html, #root {
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
+/* 채팅창 배경 여백조절*/
 .jine-content {
   position: absolute;
-  top: 30px;
-  left: 3px;
-  right: 3px;
-  bottom: 3px;
+  top: 56px;
+  left: 8px;
+  right: 11px;
+  bottom: 30px;
   background-image: url('/assets/images/jine/JINEBG.png');
   background-size: cover;
   background-repeat: no-repeat;
@@ -386,3 +387,69 @@ body, html, #root {
 }
 
 
+
+/* Settings Window Specific Styles */
+.settings-content-wrapper {
+  padding: 0px 10px 10px 10px;
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.settings-container {
+  padding: 20px;
+  color: #fff;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.settings-title {
+  text-align: center;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 0 #000;
+}
+
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.setting-item.col {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.setting-item.col span {
+  width: 100%;
+}
+
+.toggle-btn {
+  padding: 5px 15px;
+  color: #fff;
+  border: 2px solid #fff;
+  cursor: pointer;
+  background: #555; /* default off */
+}
+
+.toggle-btn.on {
+  background: #ff66aa;
+}
+
+.setting-input {
+  padding: 8px;
+  background: #222;
+  color: #fff;
+  border: 1px solid #fff;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}

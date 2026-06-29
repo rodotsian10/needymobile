@@ -263,7 +263,7 @@ export default function App() {
           <div className="window-title-text">■ Settings</div>
           <button className="window-close-btn" style={{ right: '12px', top: '14px' }} onClick={() => { playCloseSound(); closeWindow('settings'); }}></button>
           
-          <div className="window-content jine-content" style={{ padding: '40px 10px 10px 10px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
+          <div className="window-content jine-content settings-content-wrapper">
             <SettingsApp />
           </div>
         </Rnd>
