@@ -275,16 +275,49 @@ export default function App() {
               <img src="/assets/images/task_manager/icon_status_stress.png" alt="Volume" className="status-icon" />
               <div className="status-info" style={{ flex: 1 }}>
                 <div className="status-label">Volume</div>
-                <div className="status-value" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ width: '35px' }}>{settings.volume}<span className="status-slash" style={{fontSize:'12px'}}>/100</span></div>
-                  <input 
-                    type="range" 
-                    min="0" 
-                    max="100" 
-                    value={settings.volume} 
-                    onChange={(e) => updateSettings({ volume: parseInt(e.target.value) })} 
-                    style={{ flex: 1, marginLeft: '10px', height: '12px' }} 
-                  />
+                <div className="status-value" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                  <div>{settings.volume}<span className="status-slash">/100</span></div>
+                  <div 
+                    className="progress-bar-container" 
+                    style={{ cursor: 'pointer' }}
+                    onMouseDown={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+                      const newVolume = Math.round((x / rect.width) * 100);
+                      updateSettings({ volume: newVolume });
+                      
+                      const onMouseMove = (moveEvent) => {
+                        const moveX = Math.max(0, Math.min(moveEvent.clientX - rect.left, rect.width));
+                        updateSettings({ volume: Math.round((moveX / rect.width) * 100) });
+                      };
+                      const onMouseUp = () => {
+                        window.removeEventListener('mousemove', onMouseMove);
+                        window.removeEventListener('mouseup', onMouseUp);
+                      };
+                      window.addEventListener('mousemove', onMouseMove);
+                      window.addEventListener('mouseup', onMouseUp);
+                    }}
+                    onTouchStart={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const touch = e.touches[0];
+                      const x = Math.max(0, Math.min(touch.clientX - rect.left, rect.width));
+                      updateSettings({ volume: Math.round((x / rect.width) * 100) });
+                      
+                      const onTouchMove = (moveEvent) => {
+                        const moveTouch = moveEvent.touches[0];
+                        const moveX = Math.max(0, Math.min(moveTouch.clientX - rect.left, rect.width));
+                        updateSettings({ volume: Math.round((moveX / rect.width) * 100) });
+                      };
+                      const onTouchEnd = () => {
+                        window.removeEventListener('touchmove', onTouchMove);
+                        window.removeEventListener('touchend', onTouchEnd);
+                      };
+                      window.addEventListener('touchmove', onTouchMove);
+                      window.addEventListener('touchend', onTouchEnd);
+                    }}
+                  >
+                    <div className="progress-bar-fill stress-fill" style={{ width: `${settings.volume}%` }}></div>
+                  </div>
                 </div>
               </div>
             </div>
