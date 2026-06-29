@@ -30,7 +30,7 @@ jobs:
       run: npm run build
 
     - name: Install Capacitor CLI & Plugins
-      run: npm install @capacitor/core @capacitor/cli @capacitor/android
+      run: npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/keyboard
 
     - name: Init Capacitor (non-interactive)
       run: npx cap init "AmeOS" "com.ameos.app" --web-dir dist --no-interactive || true
@@ -44,6 +44,11 @@ jobs:
           "webDir": "dist",
           "server": {
             "androidScheme": "https"
+          },
+          "plugins": {
+            "Keyboard": {
+              "resize": "none"
+            }
           }
         }
         EOF
@@ -56,6 +61,10 @@ jobs:
     - name: Generate App Icons from ame.png
       run: |
         sudo apt-get install -y imagemagick
+        # Delete adaptive icon XML files to force Android to use the PNGs we generate
+        rm -f android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+        rm -f android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+        
         # Generate standard Android icon sizes
         declare -A SIZES=( ["mipmap-mdpi"]=48 ["mipmap-hdpi"]=72 ["mipmap-xhdpi"]=96 ["mipmap-xxhdpi"]=144 ["mipmap-xxxhdpi"]=192 )
         for dir in "${!SIZES[@]}"; do

@@ -18,8 +18,14 @@ body, html, #root {
   padding: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   font-family: 'PixelMplus10', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 /* Boot Screen */
