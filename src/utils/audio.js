@@ -3,6 +3,15 @@ import useAppStore from '../store/useAppStore';
 
 const sfxCache = {};
 
+// Update playing audio dynamically when volume changes
+useAppStore.subscribe((state, prevState) => {
+  if (prevState && state.settings.volume !== prevState.settings.volume) {
+    if (transformAudioInstance) {
+      transformAudioInstance.volume = state.settings.volume / 100;
+    }
+  }
+});
+
 export const playSFX = (soundFileName) => {
   // Check if SFX is enabled in the global store
   const { settings } = useAppStore.getState();

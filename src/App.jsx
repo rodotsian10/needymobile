@@ -47,8 +47,7 @@ export default function App() {
     isBooting, windows, 
     openWindow, closeWindow, focusWindow,
     messages, addMessage,
-    petState, petAction, setPetState, setPetAction
-  } = useAppStore();
+    petState, petAction, setPetState, setPetAction, settings, updateSettings } = useAppStore();
 
   const [input, setInput] = useState('');
 
@@ -271,14 +270,21 @@ export default function App() {
                 </div>
               </div>
             </div>
-            {/* Stress */}
+            {/* Volume */}
             <div className="status-row">
-              <img src="/assets/images/task_manager/icon_status_stress.png" alt="Stress" className="status-icon" />
+              <img src="/assets/images/task_manager/icon_status_stress.png" alt="Volume" className="status-icon" />
               <div className="status-info" style={{ flex: 1 }}>
-                <div className="status-label">Stress</div>
-                <div className="status-value" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                  <div>50<span className="status-slash">/100</span></div>
-                  <div className="progress-bar-container"><div className="progress-bar-fill stress-fill" style={{ width: '50%' }}></div></div>
+                <div className="status-label">Volume</div>
+                <div className="status-value" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ width: '35px' }}>{settings.volume}<span className="status-slash" style={{fontSize:'12px'}}>/100</span></div>
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max="100" 
+                    value={settings.volume} 
+                    onChange={(e) => updateSettings({ volume: parseInt(e.target.value) })} 
+                    style={{ flex: 1, marginLeft: '10px', height: '12px' }} 
+                  />
                 </div>
               </div>
             </div>
