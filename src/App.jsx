@@ -116,7 +116,7 @@ export default function App() {
   // Start BGM after boot
   useEffect(() => {
     if (!isBooting) {
-      const bgm = new Audio('/assets/audio/bgm.wav');
+      const bgm = new Audio('/assets/audio/19 Angel rests.mp3');
       bgm.loop = true;
       bgm.volume = 0.3;
       bgm.play().catch(() => {});
