@@ -103,6 +103,13 @@ const useAppStore = create(
     }),
     {
       name: 'dose-os-storage',
+      merge: (persistedState, currentState) => {
+        // Migration: If notes is a string from v1, reset it to an empty array
+        if (typeof persistedState.notes === 'string') {
+          persistedState.notes = [];
+        }
+        return { ...currentState, ...persistedState };
+      },
       partialize: (state) => ({
         settings: state.settings,
         notes: state.notes,

@@ -12,7 +12,8 @@ export default function NotepadApp() {
   // Timeout for reverting motion when typing stops
   const [typingTimeout, setTypingTimeout] = useState(null);
 
-  const currentNote = notes.find(n => n.id === currentNoteId);
+  const safeNotes = Array.isArray(notes) ? notes : [];
+  const currentNote = safeNotes.find(n => n.id === currentNoteId);
 
   useEffect(() => {
     if (currentNote) {
@@ -91,7 +92,7 @@ export default function NotepadApp() {
           + 새 메모
         </button>
         <div style={{ overflowY: 'auto', flex: 1, borderTop: '1px solid #999' }}>
-          {notes.map(note => (
+          {safeNotes.map(note => (
             <div 
               key={note.id}
               onClick={() => { playOpenSound(); setCurrentNote(note.id); setIsEditing(false); }}
@@ -110,7 +111,7 @@ export default function NotepadApp() {
               {note.title || '제목 없음'}
             </div>
           ))}
-          {notes.length === 0 && (
+          {safeNotes.length === 0 && (
             <div style={{ padding: '10px', fontSize: '11px', color: '#666', textAlign: 'center' }}>메모가 없습니다</div>
           )}
         </div>
