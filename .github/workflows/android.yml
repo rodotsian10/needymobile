@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Use Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version: '18.x'
+        node-version: '20.x'
 
     - name: Install Dependencies
       run: npm install
@@ -33,6 +33,15 @@ jobs:
         npx cap add android
         npx cap sync android
 
+    - name: Prepare App Icon & Splash (Pixel Art Scaling)
+      run: |
+        mkdir assets
+        sudo apt-get install -y imagemagick
+        convert public/assets/images/icons/ame.png -scale 1024x1024 assets/icon.png
+        convert public/assets/images/icons/ame.png -scale 2732x2732 assets/splash.png
+        npm install -g @capacitor/assets
+        npx @capacitor/assets generate --android
+
     - name: Build APK
       run: |
         cd android
@@ -40,7 +49,7 @@ jobs:
         ./gradlew assembleDebug
 
     - name: Upload APK
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: AmeOS-Android-APK
         path: android/app/build/outputs/apk/debug/app-debug.apk
