@@ -5,9 +5,9 @@ const sfxCache = {};
 
 // Update playing audio dynamically when volume changes
 useAppStore.subscribe((state, prevState) => {
-  if (prevState && state.settings.volume !== prevState.settings.volume) {
+  if (prevState && state.settings.sfxVolume !== prevState.settings.volume) {
     if (transformAudioInstance) {
-      transformAudioInstance.volume = state.settings.volume / 100;
+      transformAudioInstance.volume = state.settings.sfxVolume / 100;
     }
   }
 });
@@ -22,7 +22,7 @@ export const playSFX = (soundFileName) => {
 
   try {
     const audio = new Audio(fullPath);
-    audio.volume = settings.volume / 100;
+    audio.volume = settings.sfxVolume / 100;
     audio.play().catch(e => {
       // Ignore autoplay errors if user hasn't interacted yet
       console.warn("Audio play failed:", e);
@@ -57,7 +57,7 @@ export const playTransformSound = () => {
 
   const basePath = import.meta.env.BASE_URL + 'assets/audio/';
   transformAudioInstance = new Audio(basePath + 'transform.wav');
-  transformAudioInstance.volume = settings.volume / 100;
+  transformAudioInstance.volume = settings.sfxVolume / 100;
   transformAudioInstance.play().catch(e => console.warn("Audio play failed:", e));
 };
 
