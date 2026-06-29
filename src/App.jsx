@@ -128,7 +128,9 @@ export default function App() {
     bgmRef.current = audio;
     
     if (settings.bgmEnabled) {
-      audio.volume = (settings.volume / 100) * 0.3;
+      let targetVolume = (settings.volume / 100) * 0.3;
+      if (settings.bgmTrack === 'desire.wav') targetVolume = Math.min((settings.volume / 100) * 0.8, 1);
+      audio.volume = targetVolume;
       audio.play().catch(() => {});
     }
 
@@ -140,8 +142,9 @@ export default function App() {
   // Handle volume and play/pause dynamically
   useEffect(() => {
     if (!bgmRef.current) return;
-    
-    bgmRef.current.volume = (settings.volume / 100) * 0.3;
+    let targetVolume = (settings.volume / 100) * 0.3;
+    if (settings.bgmTrack === 'desire.wav') targetVolume = Math.min((settings.volume / 100) * 0.8, 1);
+    bgmRef.current.volume = targetVolume;
     
     if (settings.bgmEnabled) {
       bgmRef.current.play().catch(() => {});

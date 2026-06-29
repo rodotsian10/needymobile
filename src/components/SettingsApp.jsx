@@ -48,7 +48,6 @@ export default function SettingsApp() {
             <option value="event_happy.wav">Happy Event</option>
             <option value="event_kincho.wav">Tension Event</option>
             <option value="85.2.wav">85.2 (로파이)</option>
-            <option value="bank.wav">Bank</option>
             <option value="desire.wav">Desire (인터넷 엔젤)</option>
           </select>
         </div>
