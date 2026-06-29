@@ -78,7 +78,6 @@ body, html, #root {
 /* Base Window Style */
 .os-window {
   position: relative;
-  zoom: var(--window-scale, 1);
   display: flex;
   flex-direction: column;
 }

@@ -195,7 +195,7 @@ export default function App() {
   }
 
   return (
-    <div className="desktop">
+    <div className="desktop" style={{ transform: 'scale(0.7)', transformOrigin: 'top left', width: '142.85vw', height: '142.85vh' }}>
       {/* Desktop Icons */}
       <div className="desktop-icons">
         <div className="icon" onClick={() => { playOpenSound(); openWindow('ameCam'); }}>
@@ -223,6 +223,7 @@ export default function App() {
       {/* Ame Webcam Window */}
       {windows.ameCam.isOpen && (
         <Rnd
+          scale={0.7}
           bounds="parent"
           default={{ x: 10, y: 10, width: 387, height: 350 }}
           style={{ zIndex: windows.ameCam.zIndex }}
@@ -255,6 +256,7 @@ export default function App() {
       {/* JINE Window */}
       {windows.jine.isOpen && (
         <Rnd
+          scale={0.7}
           bounds="parent"
           default={{ x: 20, y: 20, width: 342, height: 500 }}
           style={{ zIndex: windows.jine.zIndex }}
@@ -291,6 +293,7 @@ export default function App() {
       {/* Settings Window */}
       {windows.settings.isOpen && (
         <Rnd
+          scale={0.7}
           bounds="parent"
           default={{ x: 30, y: 30, width: 342, height: 500 }}
           style={{ zIndex: windows.settings.zIndex }}
@@ -313,6 +316,7 @@ export default function App() {
       {/* Notepad Window */}
       {windows.notepad && windows.notepad.isOpen && (
         <Rnd
+          scale={0.7}
           bounds="parent"
           default={{ x: 40, y: 40, width: 400, height: 400 }}
           style={{ zIndex: windows.notepad.zIndex, backgroundColor: '#fff', border: '2px solid #dfdfdf', borderTopColor: '#fff', borderLeftColor: '#fff', borderRightColor: '#000', borderBottomColor: '#000' }}
@@ -343,6 +347,7 @@ export default function App() {
       {/* Status (Task Manager) Window */}
       {windows.status.isOpen && (
         <Rnd
+          scale={0.7}
           bounds="parent"
           default={{ x: 50, y: 50, width: 350, height: 280 }}
           style={{ zIndex: windows.status.zIndex }}
@@ -471,56 +476,14 @@ export default function App() {
                 </div>
               </div>
             </div>
-            {/* Window Scale */}
+            {/* Darkness */}
             <div className="status-row">
-              <img src="/assets/images/task_manager/icon_status_yami.png" alt="Scale" className="status-icon" />
+              <img src="/assets/images/task_manager/icon_status_yami.png" alt="Darkness" className="status-icon" />
               <div className="status-info" style={{ flex: 1 }}>
-                <div className="status-label">Window Scale</div>
+                <div className="status-label">Darkness</div>
                 <div className="status-value" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                  <div>{settings.windowScale || 100}<span className="status-slash">%</span></div>
-                  <div 
-                    className="progress-bar-container" 
-                    style={{ cursor: 'pointer' }}
-                    onMouseDown={(e) => {
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
-                      // Calculate scale from 50 to 150
-                      const pct = x / rect.width;
-                      const newScale = Math.round(50 + (pct * 100));
-                      updateSettings({ windowScale: newScale });
-                      
-                      const onMouseMove = (moveEvent) => {
-                        const moveX = Math.max(0, Math.min(moveEvent.clientX - rect.left, rect.width));
-                        updateSettings({ windowScale: Math.round(50 + ((moveX / rect.width) * 100)) });
-                      };
-                      const onMouseUp = () => {
-                        window.removeEventListener('mousemove', onMouseMove);
-                        window.removeEventListener('mouseup', onMouseUp);
-                      };
-                      window.addEventListener('mousemove', onMouseMove);
-                      window.addEventListener('mouseup', onMouseUp);
-                    }}
-                    onTouchStart={(e) => {
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const touch = e.touches[0];
-                      const x = Math.max(0, Math.min(touch.clientX - rect.left, rect.width));
-                      updateSettings({ windowScale: Math.round(50 + ((x / rect.width) * 100)) });
-                      
-                      const onTouchMove = (moveEvent) => {
-                        const moveTouch = moveEvent.touches[0];
-                        const moveX = Math.max(0, Math.min(moveTouch.clientX - rect.left, rect.width));
-                        updateSettings({ windowScale: Math.round(50 + ((moveX / rect.width) * 100)) });
-                      };
-                      const onTouchEnd = () => {
-                        window.removeEventListener('touchmove', onTouchMove);
-                        window.removeEventListener('touchend', onTouchEnd);
-                      };
-                      window.addEventListener('touchmove', onTouchMove);
-                      window.addEventListener('touchend', onTouchEnd);
-                    }}
-                  >
-                    <div className="progress-bar-fill darkness-fill" style={{ width: `${((settings.windowScale || 100) - 50)}%` }}></div>
-                  </div>
+                  <div>50<span className="status-slash">/100</span></div>
+                  <div className="progress-bar-container"><div className="progress-bar-fill darkness-fill" style={{ width: '50%' }}></div></div>
                 </div>
               </div>
             </div>
@@ -531,6 +494,7 @@ export default function App() {
       {/* Director Window */}
       {windows.director.isOpen && (
         <Rnd
+          scale={0.7}
           bounds="parent"
           default={{ x: 60, y: 60, width: 400, height: 500 }}
           style={{ zIndex: windows.director.zIndex }}
