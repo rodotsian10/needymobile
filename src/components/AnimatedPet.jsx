@@ -134,7 +134,7 @@ export default function AnimatedPet() {
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center',
-      backgroundImage: "url('./assets/images/ame/bg/0.png')",
+      backgroundImage: "url('/assets/images/ame/bg/0.png')",
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       position: 'relative'

@@ -26,6 +26,10 @@ jobs:
           npm ci
           npm run build
 
+      - name: Fix paths for GitHub Pages
+        run: |
+          find dist -type f \( -name "*.html" -o -name "*.js" -o -name "*.css" \) -exec sed -i 's|/assets/|/needymobile/assets/|g' {} +
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
