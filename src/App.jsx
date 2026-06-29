@@ -251,19 +251,19 @@ export default function App() {
       {/* Settings Window */}
       {windows.settings.isOpen && (
         <Rnd
-          default={{ x: 300, y: 150, width: 350, height: 450 }}
+          default={{ x: 300, y: 150, width: 342, height: 500 }}
           style={{ zIndex: windows.settings.zIndex }}
           onMouseDown={() => focusWindow('settings')}
           enableResizing={false}
           dragHandleClassName="window-drag-area"
-          className="os-window settings-window"
+          className="os-window jine-window"
         >
-          <img src="/assets/images/jine/window_settings.png" className="settings-bg" alt="settings-bg" style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: -1, objectFit: 'fill' }} onError={(e) => { e.target.src = '/assets/images/border/window-jinebig.png' }} />
           <div className="window-drag-area"></div>
-          <div className="window-title-text" style={{ color: '#fff', top: '10px' }}>■ Settings</div>
+          {/* Window Title */}
+          <div className="window-title-text">■ Settings</div>
           <button className="window-close-btn" style={{ right: '12px', top: '14px' }} onClick={() => { playCloseSound(); closeWindow('settings'); }}></button>
           
-          <div className="window-content settings-content" style={{ padding: '40px 10px 10px 10px', height: '100%', boxSizing: 'border-box' }}>
+          <div className="window-content jine-content" style={{ padding: '40px 10px 10px 10px', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
             <SettingsApp />
           </div>
         </Rnd>

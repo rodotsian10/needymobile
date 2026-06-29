@@ -385,22 +385,4 @@ body, html, #root {
   z-index: 5;
 }
 
-/* Settings Window */
-.settings-window {
-  background-color: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-.settings-window .window-title-text {
-  display: none !important;
-}
-.settings-window .window-close-btn {
-  top: 25px !important;
-  right: 15px !important;
-  width: 20px !important;
-  height: 20px !important;
-  opacity: 0; /* Make it invisible but clickable */
-}
-.settings-content {
-  background-color: transparent !important;
-}
+
