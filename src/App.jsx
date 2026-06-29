@@ -219,6 +219,7 @@ export default function App() {
       {/* Ame Webcam Window */}
       {windows.ameCam.isOpen && (
         <Rnd
+          bounds="parent"
           default={{ x: 50, y: 50, width: 387, height: 350 }}
           style={{ zIndex: windows.ameCam.zIndex }}
           onMouseDown={() => focusWindow('ameCam')}
@@ -250,6 +251,7 @@ export default function App() {
       {/* JINE Window */}
       {windows.jine.isOpen && (
         <Rnd
+          bounds="parent"
           default={{ x: 600, y: 50, width: 342, height: 500 }}
           style={{ zIndex: windows.jine.zIndex }}
           onMouseDown={() => focusWindow('jine')}
@@ -285,6 +287,7 @@ export default function App() {
       {/* Settings Window */}
       {windows.settings.isOpen && (
         <Rnd
+          bounds="parent"
           default={{ x: 300, y: 150, width: 342, height: 500 }}
           style={{ zIndex: windows.settings.zIndex }}
           onMouseDown={() => focusWindow('settings')}
@@ -306,6 +309,7 @@ export default function App() {
       {/* Notepad Window */}
       {windows.notepad && windows.notepad.isOpen && (
         <Rnd
+          bounds="parent"
           default={{ x: 150, y: 150, width: 400, height: 400 }}
           style={{ zIndex: windows.notepad.zIndex, backgroundColor: '#fff', border: '2px solid #dfdfdf', borderTopColor: '#fff', borderLeftColor: '#fff', borderRightColor: '#000', borderBottomColor: '#000' }}
           onMouseDown={() => focusWindow('notepad')}
@@ -333,6 +337,7 @@ export default function App() {
       {/* Status (Task Manager) Window */}
       {windows.status.isOpen && (
         <Rnd
+          bounds="parent"
           default={{ x: 950, y: 50, width: 350, height: 280 }}
           style={{ zIndex: windows.status.zIndex }}
           onMouseDown={() => focusWindow('status')}
@@ -478,6 +483,7 @@ export default function App() {
       {/* Director Window */}
       {windows.director.isOpen && (
         <Rnd
+          bounds="parent"
           default={{ x: 300, y: 150, width: 400, height: 500 }}
           style={{ zIndex: windows.director.zIndex }}
           onMouseDown={() => focusWindow('director')}
