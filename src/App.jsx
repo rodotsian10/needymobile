@@ -207,6 +207,9 @@ export default function App() {
             <img src="/assets/images/icons/calendar.png" alt="icon" style={{width: 60, height: 60}}/><br/>Director
           </div>
         )}
+        <div className="icon" onClick={() => { playOpenSound(); openWindow('notepad'); }}>
+          <img src="/assets/images/icons/text.png" alt="icon" style={{width: 60, height: 60, imageRendering: 'pixelated' }}/><br/>Notepad
+        </div>
         <div className="icon" onClick={() => { playOpenSound(); openWindow('settings'); }}>
           <img src="/assets/images/jine/button_gear.png" alt="icon" style={{width: 60, height: 60, imageRendering: 'pixelated' }}/><br/>Settings
         </div>
