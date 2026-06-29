@@ -10,7 +10,7 @@ const BootScreen = () => {
   const [text, setText] = useState('');
   
   useEffect(() => {
-    const audio = new Audio('/assets/audio/boot.wav');
+    const audio = new Audio('./assets/audio/boot.wav');
     audio.play().catch(() => {});
 
     const lines = [
@@ -116,7 +116,7 @@ export default function App() {
   // Start BGM after boot
   useEffect(() => {
     if (!isBooting) {
-      const bgm = new Audio('/assets/audio/bgm.wav');
+      const bgm = new Audio('./assets/audio/bgm.wav');
       bgm.loop = true;
       bgm.volume = 0.3;
       bgm.play().catch(() => {});
@@ -134,7 +134,7 @@ export default function App() {
     if (!input.trim()) return;
     addMessage({ id: Date.now(), text: input, sender: 'user' });
     setInput('');
-    const audio = new Audio('/assets/audio/jine_send_stamp.wav');
+    const audio = new Audio('./assets/audio/jine_send_stamp.wav');
     audio.play().catch(()=>{});
     setTimeout(() => {
       addMessage({ id: Date.now() + 1, text: "알았어!", sender: 'ame' });
@@ -164,16 +164,16 @@ export default function App() {
       {/* Desktop Icons */}
       <div className="desktop-icons">
         <div className="icon" onClick={() => { playOpenSound(); openWindow('ameCam'); }}>
-          <img src="/assets/images/icons/ame.png" alt="icon" style={{width: 60, height: 60}}/><br/>Ame
+          <img src="./assets/images/icons/ame.png" alt="icon" style={{width: 60, height: 60}}/><br/>Ame
         </div>
         <div className="icon" onClick={() => { playOpenSound(); openWindow('jine'); }}>
-          <img src="/assets/images/icons/jine.png" alt="icon" style={{width: 60, height: 60}}/><br/>JINE
+          <img src="./assets/images/icons/jine.png" alt="icon" style={{width: 60, height: 60}}/><br/>JINE
         </div>
         <div className="icon" onClick={() => { playOpenSound(); openWindow('status'); }}>
-          <img src="/assets/images/icons/task.png" alt="icon" style={{width: 60, height: 60}}/><br/>Task Manager
+          <img src="./assets/images/icons/task.png" alt="icon" style={{width: 60, height: 60}}/><br/>Task Manager
         </div>
         <div className="icon" onClick={() => { playOpenSound(); openWindow('director'); }}>
-          <img src="/assets/images/icons/calendar.png" alt="icon" style={{width: 60, height: 60}}/><br/>Director
+          <img src="./assets/images/icons/calendar.png" alt="icon" style={{width: 60, height: 60}}/><br/>Director
         </div>
       </div>
 
@@ -187,7 +187,7 @@ export default function App() {
           dragHandleClassName="window-drag-area"
           className="os-window ame-window"
         >
-          <img src="/assets/images/border/window-ame.png" className="ame-window-bg" alt="border" onError={(e) => { e.target.src = '/assets/images/border/window-jinebig.png' }} />
+          <img src="./assets/images/border/window-ame.png" className="ame-window-bg" alt="border" onError={(e) => { e.target.src = './assets/images/border/window-jinebig.png' }} />
           <div className="window-drag-area"></div>
           {/* Window Title */}
           <div className="window-title-text">■ webcam</div>
@@ -253,7 +253,7 @@ export default function App() {
           dragHandleClassName="window-drag-area"
           className="os-window task-manager-window"
         >
-          <img src="/assets/images/task_manager/window.png" className="task-manager-bg" alt="Task Manager Border" onError={(e) => { e.target.style.display = 'none'; e.target.parentNode.style.backgroundColor = '#fff'; e.target.parentNode.style.border = '2px solid #dfdfdf'; }} />
+          <img src="./assets/images/task_manager/window.png" className="task-manager-bg" alt="Task Manager Border" onError={(e) => { e.target.style.display = 'none'; e.target.parentNode.style.backgroundColor = '#fff'; e.target.parentNode.style.border = '2px solid #dfdfdf'; }} />
           <div className="window-drag-area"></div>
           {/* Window Title */}
           <div className="window-title-text" style={{ color: '#fff', top: '4px' }}>■ 작업 관리자</div>
@@ -263,7 +263,7 @@ export default function App() {
           <div className="window-content task-manager-content">
             {/* Date (replaces Followers) */}
             <div className="status-row">
-              <img src="/assets/images/task_manager/icon_status_follower.png" alt="Date" className="status-icon" />
+              <img src="./assets/images/task_manager/icon_status_follower.png" alt="Date" className="status-icon" />
               <div className="status-info" style={{ flex: 1 }}>
                 <div className="status-label">DAY {getDayOfYear()}</div>
                 <div className="status-value" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', fontSize: '18px' }}>
@@ -273,7 +273,7 @@ export default function App() {
             </div>
             {/* Stress */}
             <div className="status-row">
-              <img src="/assets/images/task_manager/icon_status_stress.png" alt="Stress" className="status-icon" />
+              <img src="./assets/images/task_manager/icon_status_stress.png" alt="Stress" className="status-icon" />
               <div className="status-info" style={{ flex: 1 }}>
                 <div className="status-label">Stress</div>
                 <div className="status-value" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
@@ -284,7 +284,7 @@ export default function App() {
             </div>
             {/* Affection */}
             <div className="status-row">
-              <img src="/assets/images/task_manager/icon_status_love.png" alt="Affection" className="status-icon" />
+              <img src="./assets/images/task_manager/icon_status_love.png" alt="Affection" className="status-icon" />
               <div className="status-info" style={{ flex: 1 }}>
                 <div className="status-label">Affection</div>
                 <div className="status-value" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
@@ -295,7 +295,7 @@ export default function App() {
             </div>
             {/* Darkness */}
             <div className="status-row">
-              <img src="/assets/images/task_manager/icon_status_yami.png" alt="Darkness" className="status-icon" />
+              <img src="./assets/images/task_manager/icon_status_yami.png" alt="Darkness" className="status-icon" />
               <div className="status-info" style={{ flex: 1 }}>
                 <div className="status-label">Darkness</div>
                 <div className="status-value" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
@@ -318,7 +318,7 @@ export default function App() {
           dragHandleClassName="window-drag-area"
           className="os-window director-window"
         >
-          <img src="/assets/images/border/window-jinebig.png" className="director-bg" alt="director-bg" style={{ width: '100%', height: '100%', objectFit: 'fill' }} />
+          <img src="./assets/images/border/window-jinebig.png" className="director-bg" alt="director-bg" style={{ width: '100%', height: '100%', objectFit: 'fill' }} />
           <div className="window-drag-area" style={{ background: 'transparent', height: '24px' }}></div>
           {/* Window Title */}
           <div className="window-title-text" style={{ color: '#fff', top: '4px', left: '10px' }}>모션 디렉터</div>

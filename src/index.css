@@ -1,16 +1,16 @@
 @font-face {
   font-family: 'PixelMplus10';
-  src: url('/assets/fonts/PixelMplus10-Regular.ttf') format('truetype');
+  src: url('./assets/fonts/PixelMplus10-Regular.ttf') format('truetype');
 }
 
 @font-face {
   font-family: 'DinkieBitmap';
-  src: url('/assets/fonts/DinkieBitmap-7px.ttf') format('truetype');
+  src: url('./assets/fonts/DinkieBitmap-7px.ttf') format('truetype');
 }
 
 @font-face {
   font-family: 'PressStart2P';
-  src: url('/assets/fonts/PressStart2P-Regular.ttf') format('truetype');
+  src: url('./assets/fonts/PressStart2P-Regular.ttf') format('truetype');
 }
 
 body, html, #root {
@@ -38,7 +38,7 @@ body, html, #root {
   width: 100vw;
   height: 100vh;
   background-color: #008080;
-  background-image: url('/assets/images/desktop_bg.png');
+  background-image: url('./assets/images/desktop_bg.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -213,7 +213,7 @@ body, html, #root {
 
 /* JINE Window */
 .jine-window {
-  background-image: url('/assets/images/jine/window_new.png');
+  background-image: url('./assets/images/jine/window_new.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
@@ -223,7 +223,7 @@ body, html, #root {
   left: 3px;
   right: 3px;
   bottom: 3px;
-  background-image: url('/assets/images/jine/JINEBG.png');
+  background-image: url('./assets/images/jine/JINEBG.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -375,7 +375,7 @@ body, html, #root {
   left: 5px;
   right: 5px;
   bottom: 5px;
-  background-image: url('/assets/images/jine/JINEBG.png');
+  background-image: url('./assets/images/jine/JINEBG.png');
   background-size: cover;
   border: 2px solid #000;
   display: flex;
