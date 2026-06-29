@@ -43,6 +43,8 @@ body, html, #root {
   background-position: center;
   background-repeat: no-repeat;
   position: relative;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 /* Desktop Icons */

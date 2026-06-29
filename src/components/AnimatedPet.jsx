@@ -55,7 +55,7 @@ export default function AnimatedPet() {
     
     const isTransforming = petState === 'transforming' || petState === 'transforming_dark';
     if (isTransforming) {
-      fps = 24; // Transform sequence is long, needs higher fps
+      fps = 13.7; // Sync with 14 second transformation audio (05 天使の輪の上で.wav)
     } else if (petAction === 'stream/27/0') {
       fps = 4; // Slow down ice cream eating
     } else if (petState === 'kangel') {

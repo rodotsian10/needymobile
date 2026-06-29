@@ -8,6 +8,18 @@ const useAppStore = create((set) => ({
   // Theme (Darkness)
   theme: 'normal', // 'normal' | 'dark'
   
+  // Settings
+  settings: {
+    sfxEnabled: true,
+    bgmEnabled: true,
+    volume: 50,
+    directorEnabled: false,
+    autoMotionEnabled: true,
+  },
+  updateSettings: (newSettings) => set((state) => ({
+    settings: { ...state.settings, ...newSettings }
+  })),
+
   // Windows State
   windows: {
     ameCam: { isOpen: true, zIndex: 1 },

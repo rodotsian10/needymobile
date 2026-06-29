@@ -3,6 +3,7 @@ import { Rnd } from 'react-rnd';
 import useAppStore from './store/useAppStore';
 import AnimatedPet from './components/AnimatedPet';
 import './index.css';
+import { playOpenSound, playCloseSound, playExecuteSound, playJineSendSound, playTransformSound, stopTransformSound, playEndHaishinSound } from './utils/audio';
 
 const BootScreen = () => {
   const { finishBoot } = useAppStore();
@@ -123,6 +124,12 @@ export default function App() {
     }
   }, [isBooting]);
 
+    useEffect(() => {
+    if (petState === 'kangel' || petState === 'idle') {
+      stopTransformSound();
+    }
+  }, [petState]);
+
   const handleSend = () => {
     if (!input.trim()) return;
     addMessage({ id: Date.now(), text: input, sender: 'user' });
@@ -135,6 +142,8 @@ export default function App() {
   };
 
   const handleTransform = () => {
+    playExecuteSound();
+    playTransformSound();
     setPetState('transforming');
   };
 
@@ -154,16 +163,16 @@ export default function App() {
     <div className="desktop">
       {/* Desktop Icons */}
       <div className="desktop-icons">
-        <div className="icon" onClick={() => openWindow('ameCam')}>
+        <div className="icon" onClick={() => { playOpenSound(); openWindow('ameCam'); }}>
           <img src="/assets/images/icons/ame.png" alt="icon" style={{width: 60, height: 60}}/><br/>Ame
         </div>
-        <div className="icon" onClick={() => openWindow('jine')}>
+        <div className="icon" onClick={() => { playOpenSound(); openWindow('jine'); }}>
           <img src="/assets/images/icons/jine.png" alt="icon" style={{width: 60, height: 60}}/><br/>JINE
         </div>
-        <div className="icon" onClick={() => openWindow('status')}>
+        <div className="icon" onClick={() => { playOpenSound(); openWindow('status'); }}>
           <img src="/assets/images/icons/task.png" alt="icon" style={{width: 60, height: 60}}/><br/>Task Manager
         </div>
-        <div className="icon" onClick={() => openWindow('director')}>
+        <div className="icon" onClick={() => { playOpenSound(); openWindow('director'); }}>
           <img src="/assets/images/icons/calendar.png" alt="icon" style={{width: 60, height: 60}}/><br/>Director
         </div>
       </div>
@@ -175,13 +184,14 @@ export default function App() {
           style={{ zIndex: windows.ameCam.zIndex }}
           onMouseDown={() => focusWindow('ameCam')}
           enableResizing={false}
+          dragHandleClassName="window-drag-area"
           className="os-window ame-window"
         >
           <img src="/assets/images/border/window-ame.png" className="ame-window-bg" alt="border" onError={(e) => { e.target.src = '/assets/images/border/window-jinebig.png' }} />
           <div className="window-drag-area"></div>
           {/* Window Title */}
           <div className="window-title-text">■ webcam</div>
-          <button className="window-close-btn" style={{ right: '12px', top: '14px' }} onClick={() => closeWindow('ameCam')}></button>
+          <button className="window-close-btn" style={{ right: '12px', top: '14px' }} onClick={() => { playCloseSound(); closeWindow('ameCam'); }}></button>
           <div className="window-content ame-content">
             <AnimatedPet />
             {petState === 'idle' && (
@@ -190,7 +200,7 @@ export default function App() {
               </button>
             )}
             {petState === 'kangel' && (
-              <button className="transform-btn revert-btn" onClick={() => setPetState('idle')}>
+              <button className="transform-btn revert-btn" onClick={() => { playEndHaishinSound(); stopTransformSound(); setPetState('idle'); }}>
                 off Air
               </button>
             )}
@@ -205,12 +215,13 @@ export default function App() {
           style={{ zIndex: windows.jine.zIndex }}
           onMouseDown={() => focusWindow('jine')}
           enableResizing={false}
+          dragHandleClassName="window-drag-area"
           className="os-window jine-window"
         >
           <div className="window-drag-area"></div>
           {/* Window Title */}
           <div className="window-title-text">■ JINE</div>
-          <button className="window-close-btn" style={{ right: '12px', top: '14px' }} onClick={() => closeWindow('jine')}></button>
+          <button className="window-close-btn" style={{ right: '12px', top: '14px' }} onClick={() => { playCloseSound(); closeWindow('jine'); }}></button>
           <div className="window-content jine-content">
             <div className="jine-chat">
               {messages.map(msg => (
@@ -239,6 +250,7 @@ export default function App() {
           style={{ zIndex: windows.status.zIndex }}
           onMouseDown={() => focusWindow('status')}
           enableResizing={false}
+          dragHandleClassName="window-drag-area"
           className="os-window task-manager-window"
         >
           <img src="/assets/images/task_manager/window.png" className="task-manager-bg" alt="Task Manager Border" onError={(e) => { e.target.style.display = 'none'; e.target.parentNode.style.backgroundColor = '#fff'; e.target.parentNode.style.border = '2px solid #dfdfdf'; }} />
@@ -246,7 +258,7 @@ export default function App() {
           {/* Window Title */}
           <div className="window-title-text" style={{ color: '#fff', top: '4px' }}>■ 작업 관리자</div>
           {/* Close button relative to Task Manager layout */}
-          <button className="window-close-btn" style={{ right: '10px', top: '4px' }} onClick={() => closeWindow('status')}></button>
+          <button className="window-close-btn" style={{ right: '10px', top: '4px' }} onClick={() => { playCloseSound(); closeWindow('status'); }}></button>
           
           <div className="window-content task-manager-content">
             {/* Date (replaces Followers) */}
@@ -303,13 +315,14 @@ export default function App() {
           style={{ zIndex: windows.director.zIndex }}
           onMouseDown={() => focusWindow('director')}
           enableResizing={false}
+          dragHandleClassName="window-drag-area"
           className="os-window director-window"
         >
           <img src="/assets/images/border/window-jinebig.png" className="director-bg" alt="director-bg" style={{ width: '100%', height: '100%', objectFit: 'fill' }} />
           <div className="window-drag-area" style={{ background: 'transparent', height: '24px' }}></div>
           {/* Window Title */}
           <div className="window-title-text" style={{ color: '#fff', top: '4px', left: '10px' }}>모션 디렉터</div>
-          <button className="window-close-btn" style={{ right: '6px', top: '4px', color: '#fff' }} onClick={() => closeWindow('director')}></button>
+          <button className="window-close-btn" style={{ right: '6px', top: '4px', color: '#fff' }} onClick={() => { playCloseSound(); closeWindow('director'); }}></button>
           
           <div className="director-content">
             <h3 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#a372f5', background: 'rgba(255,255,255,0.7)', padding: '5px' }}>
@@ -323,7 +336,7 @@ export default function App() {
                 <button 
                   className="retro-btn" 
                   style={{ marginTop: '15px', color: '#000' }}
-                  onClick={() => setPetState('kangel')}
+                  onClick={() => { stopTransformSound(); setPetState('kangel'); }}
                 >
                   변신 스킵
                 </button>
@@ -335,7 +348,9 @@ export default function App() {
                     key={motion.path}
                     className={`retro-btn ${petAction === motion.path ? 'active' : ''}`}
                     onClick={() => {
+                      playExecuteSound();
                       if (motion.path === 'transformation_dark') {
+                        playTransformSound();
                         setPetState('transforming_dark');
                       } else {
                         setPetAction(motion.path);
