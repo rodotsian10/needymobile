@@ -191,7 +191,7 @@ export default function App() {
           <div className="window-drag-area"></div>
           {/* Window Title */}
           <div className="window-title-text">■ webcam</div>
-          <button className="window-close-btn" style={{ right: '12px', top: '14px' }} onClick={() => { playCloseSound(); closeWindow('ameCam'); }}></button>
+          <button className="window-close-btn" style={{ right: '12px', top: '14px' }} onClick={() => { playCloseSound(); if (petState.startsWith('transforming')) { stopTransformSound(); setPetState('idle'); } closeWindow('ameCam'); }}></button>
           <div className="window-content ame-content">
             <AnimatedPet />
             {petState === 'idle' && (
