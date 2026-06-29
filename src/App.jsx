@@ -224,7 +224,7 @@ export default function App() {
       {windows.ameCam.isOpen && (
         <Rnd
           bounds="parent"
-          default={{ x: 50, y: 50, width: 387, height: 350 }}
+          default={{ x: 10, y: 10, width: 387, height: 350 }}
           style={{ zIndex: windows.ameCam.zIndex }}
           onMouseDown={() => focusWindow('ameCam')}
           enableResizing={false}
@@ -256,7 +256,7 @@ export default function App() {
       {windows.jine.isOpen && (
         <Rnd
           bounds="parent"
-          default={{ x: 600, y: 50, width: 342, height: 500 }}
+          default={{ x: 20, y: 20, width: 342, height: 500 }}
           style={{ zIndex: windows.jine.zIndex }}
           onMouseDown={() => focusWindow('jine')}
           enableResizing={false}
@@ -292,7 +292,7 @@ export default function App() {
       {windows.settings.isOpen && (
         <Rnd
           bounds="parent"
-          default={{ x: 300, y: 150, width: 342, height: 500 }}
+          default={{ x: 30, y: 30, width: 342, height: 500 }}
           style={{ zIndex: windows.settings.zIndex }}
           onMouseDown={() => focusWindow('settings')}
           enableResizing={false}
@@ -314,7 +314,7 @@ export default function App() {
       {windows.notepad && windows.notepad.isOpen && (
         <Rnd
           bounds="parent"
-          default={{ x: 150, y: 150, width: 400, height: 400 }}
+          default={{ x: 40, y: 40, width: 400, height: 400 }}
           style={{ zIndex: windows.notepad.zIndex, backgroundColor: '#fff', border: '2px solid #dfdfdf', borderTopColor: '#fff', borderLeftColor: '#fff', borderRightColor: '#000', borderBottomColor: '#000' }}
           onMouseDown={() => focusWindow('notepad')}
           enableResizing={true}
@@ -344,7 +344,7 @@ export default function App() {
       {windows.status.isOpen && (
         <Rnd
           bounds="parent"
-          default={{ x: 950, y: 50, width: 350, height: 280 }}
+          default={{ x: 50, y: 50, width: 350, height: 280 }}
           style={{ zIndex: windows.status.zIndex }}
           onMouseDown={() => focusWindow('status')}
           enableResizing={false}
@@ -532,7 +532,7 @@ export default function App() {
       {windows.director.isOpen && (
         <Rnd
           bounds="parent"
-          default={{ x: 300, y: 150, width: 400, height: 500 }}
+          default={{ x: 60, y: 60, width: 400, height: 500 }}
           style={{ zIndex: windows.director.zIndex }}
           onMouseDown={() => focusWindow('director')}
           enableResizing={false}
