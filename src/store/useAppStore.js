@@ -23,8 +23,20 @@ const useAppStore = create(
       },
       
       // Notepad State
-      notes: '',
-      updateNotes: (text) => set({ notes: text }),
+      notes: [],
+      currentNoteId: null,
+      addNote: (note) => set((state) => ({ 
+        notes: [...state.notes, note], 
+        currentNoteId: note.id 
+      })),
+      updateNote: (id, content, title) => set((state) => ({
+        notes: state.notes.map(n => n.id === id ? { ...n, content, title, updatedAt: Date.now() } : n)
+      })),
+      deleteNote: (id) => set((state) => ({
+        notes: state.notes.filter(n => n.id !== id),
+        currentNoteId: state.currentNoteId === id ? null : state.currentNoteId
+      })),
+      setCurrentNote: (id) => set({ currentNoteId: id }),
 
       updateSettings: (newSettings) => set((state) => ({
         settings: { ...state.settings, ...newSettings }
