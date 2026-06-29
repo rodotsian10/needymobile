@@ -20,6 +20,7 @@ const useAppStore = create(
         sfxVolume: 50,
         directorEnabled: false,
         autoMotionEnabled: true,
+        windowScale: 100,
       },
       
       // Notepad State

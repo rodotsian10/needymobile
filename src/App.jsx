@@ -161,6 +161,10 @@ export default function App() {
     }
   }, [petState]);
 
+  useEffect(() => {
+    document.documentElement.style.setProperty('--window-scale', (settings.windowScale || 100) / 100);
+  }, [settings.windowScale]);
+
   const handleSend = () => {
     if (!input.trim()) return;
     addMessage({ id: Date.now(), text: input, sender: 'user' });
@@ -321,8 +325,10 @@ export default function App() {
           <div className="window-drag-area" style={{ backgroundColor: '#000080', height: '24px', width: '100%', position: 'relative' }}>
             <span style={{ color: '#fff', marginLeft: '5px', fontSize: '12px', lineHeight: '24px', fontFamily: 'DinkieBitmap, sans-serif' }}>Notepad</span>
             <button 
+              className="cancel"
               style={{ position: 'absolute', right: '2px', top: '2px', width: '20px', height: '20px', backgroundColor: '#dfdfdf', border: '1px solid #fff', borderBottomColor: '#000', borderRightColor: '#000', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}
               onClick={() => { playCloseSound(); closeWindow('notepad'); }}
+              onTouchEnd={(e) => { e.stopPropagation(); playCloseSound(); closeWindow('notepad'); }}
             >
               X
             </button>
@@ -465,14 +471,56 @@ export default function App() {
                 </div>
               </div>
             </div>
-            {/* Darkness */}
+            {/* Window Scale */}
             <div className="status-row">
-              <img src="/assets/images/task_manager/icon_status_yami.png" alt="Darkness" className="status-icon" />
+              <img src="/assets/images/task_manager/icon_status_yami.png" alt="Scale" className="status-icon" />
               <div className="status-info" style={{ flex: 1 }}>
-                <div className="status-label">Darkness</div>
+                <div className="status-label">Window Scale</div>
                 <div className="status-value" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                  <div>50<span className="status-slash">/100</span></div>
-                  <div className="progress-bar-container"><div className="progress-bar-fill darkness-fill" style={{ width: '50%' }}></div></div>
+                  <div>{settings.windowScale || 100}<span className="status-slash">%</span></div>
+                  <div 
+                    className="progress-bar-container" 
+                    style={{ cursor: 'pointer' }}
+                    onMouseDown={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+                      // Calculate scale from 50 to 150
+                      const pct = x / rect.width;
+                      const newScale = Math.round(50 + (pct * 100));
+                      updateSettings({ windowScale: newScale });
+                      
+                      const onMouseMove = (moveEvent) => {
+                        const moveX = Math.max(0, Math.min(moveEvent.clientX - rect.left, rect.width));
+                        updateSettings({ windowScale: Math.round(50 + ((moveX / rect.width) * 100)) });
+                      };
+                      const onMouseUp = () => {
+                        window.removeEventListener('mousemove', onMouseMove);
+                        window.removeEventListener('mouseup', onMouseUp);
+                      };
+                      window.addEventListener('mousemove', onMouseMove);
+                      window.addEventListener('mouseup', onMouseUp);
+                    }}
+                    onTouchStart={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const touch = e.touches[0];
+                      const x = Math.max(0, Math.min(touch.clientX - rect.left, rect.width));
+                      updateSettings({ windowScale: Math.round(50 + ((x / rect.width) * 100)) });
+                      
+                      const onTouchMove = (moveEvent) => {
+                        const moveTouch = moveEvent.touches[0];
+                        const moveX = Math.max(0, Math.min(moveTouch.clientX - rect.left, rect.width));
+                        updateSettings({ windowScale: Math.round(50 + ((moveX / rect.width) * 100)) });
+                      };
+                      const onTouchEnd = () => {
+                        window.removeEventListener('touchmove', onTouchMove);
+                        window.removeEventListener('touchend', onTouchEnd);
+                      };
+                      window.addEventListener('touchmove', onTouchMove);
+                      window.addEventListener('touchend', onTouchEnd);
+                    }}
+                  >
+                    <div className="progress-bar-fill darkness-fill" style={{ width: `${((settings.windowScale || 100) - 50)}%` }}></div>
+                  </div>
                 </div>
               </div>
             </div>
