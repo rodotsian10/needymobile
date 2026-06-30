@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Rnd } from 'react-rnd';
 import useAppStore from './store/useAppStore';
 import AnimatedPet from './components/AnimatedPet';
@@ -53,6 +53,7 @@ export default function App() {
 
   const [input, setInput] = useState('');
   const [isAiTyping, setIsAiTyping] = useState(false);
+  const jineChatRef = useRef(null);
 
   const AME_MOTIONS = [
     { label: '평온 (기본)', path: '0/0/0/0' },
@@ -166,6 +167,12 @@ export default function App() {
     document.documentElement.style.setProperty('--window-scale', (settings.windowScale || 100) / 100);
   }, [settings.windowScale]);
 
+  useEffect(() => {
+    if (jineChatRef.current) {
+      jineChatRef.current.scrollTop = jineChatRef.current.scrollHeight;
+    }
+  }, [jineMessages, isAiTyping]);
+
   const handleSend = async () => {
     if (!input.trim() || isAiTyping) return;
     const userMsg = input.trim();
@@ -179,9 +186,27 @@ export default function App() {
       const { fetchAIChat } = await import('./utils/ai');
       const response = await fetchAIChat(userMsg, jineMessages, petState);
       
-      const audio = new Audio('/assets/audio/jine_send_stamp.wav');
-      audio.play().catch(()=>{});
-      addJineMessage({ id: Date.now() + 1, text: response, sender: 'ame' });
+      const lines = response.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+      
+      for (let i = 0; i < lines.length; i++) {
+        setIsAiTyping(true);
+        // Delay between 500ms and 1500ms based on length for realism, skip delay for the first message if needed, but let's just wait for all.
+        const delay = Math.min(2000, 500 + lines[i].length * 50);
+        if (i > 0) {
+          await new Promise(r => setTimeout(r, delay));
+        } else {
+          await new Promise(r => setTimeout(r, 500)); // Initial short delay
+        }
+        
+        setIsAiTyping(false);
+        const audio = new Audio('/assets/audio/jine_send_stamp.wav');
+        audio.play().catch(()=>{});
+        addJineMessage({ id: Date.now() + Math.random(), text: lines[i], sender: 'ame' });
+        // Slight pause before starting to type the next one
+        if (i < lines.length - 1) {
+          await new Promise(r => setTimeout(r, 300));
+        }
+      }
     } catch (error) {
       addJineMessage({ id: Date.now() + 1, text: `[시스템 에러] ${error.message}`, sender: 'ame' });
     } finally {
@@ -283,7 +308,7 @@ export default function App() {
           <div className="window-title-text">■ JINE</div>
           <button className="window-close-btn" style={{ right: '12px', top: '14px' }} onClick={() => { playCloseSound(); closeWindow('jine'); }}></button>
           <div className="window-content jine-content">
-            <div className="jine-chat">
+            <div className="jine-chat" ref={jineChatRef}>
               {jineMessages && jineMessages.map(msg => (
                 <div key={msg.id} className={`jine-bubble ${msg.sender}`}>
                   {msg.text}
