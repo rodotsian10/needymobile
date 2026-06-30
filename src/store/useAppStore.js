@@ -87,6 +87,7 @@ const useAppStore = create(
         { id: 2, text: "당연하지! 승인욕구 몬스터니까!", sender: "ame" }
       ],
       addJineMessage: (msg) => set((state) => ({ jineMessages: [...state.jineMessages, msg] })),
+      clearJineMessages: () => set({ jineMessages: [] }),
       
       // Status
       stress: 50,

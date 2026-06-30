@@ -2,7 +2,7 @@ import React from 'react';
 import useAppStore from '../store/useAppStore';
 
 export default function SettingsApp() {
-  const { settings, updateSettings } = useAppStore();
+  const { settings, updateSettings, clearJineMessages } = useAppStore();
   const [localApiKey, setLocalApiKey] = React.useState(settings.apiKey || '');
   const [localApiProvider, setLocalApiProvider] = React.useState(settings.apiProvider || 'gemini');
   const [showAlert, setShowAlert] = React.useState(false);
@@ -93,6 +93,17 @@ export default function SettingsApp() {
               저장
             </button>
           </div>
+          <button 
+            style={{ marginTop: '10px', fontFamily: 'PixelMplus10', padding: '5px 10px', backgroundColor: '#ffcccc', border: '1px solid #fff', borderBottomColor: '#000', borderRightColor: '#000', cursor: 'pointer', color: '#000' }}
+            onClick={() => {
+              if (window.confirm('모든 JINE 대화 기록을 지우시겠습니까?')) {
+                clearJineMessages();
+                alert('대화 기록이 삭제되었습니다.');
+              }
+            }}
+          >
+            대화 기록 초기화
+          </button>
         </div>
 
         {/* Director App Visible Toggle */}
