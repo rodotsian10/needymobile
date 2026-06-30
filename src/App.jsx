@@ -65,6 +65,7 @@ export default function App() {
   const jineChatRef = useRef(null);
   const anxietyStreakRef = useRef(0); // Tracks consecutive anxiety/negative emotions
   const currentEmotionActionRef = useRef(null); // Tracks which motion is active during AI response
+  const isSendingRef = useRef(false); // Synchronous lock for handleSend
 
   // Maps emotion string from AI to petAction path
   const getEmotionAction = (emotion) => {
@@ -372,7 +373,11 @@ export default function App() {
   }, [settings.menheraMode]);
 
   const handleSend = async () => {
-    if (!input.trim() || isAiResponding || isCooldown) return;
+    // Check both React state (for UI) and synchronous ref (for double-click/Enter spam)
+    if (!input.trim() || isAiResponding || isCooldown || isSendingRef.current) return;
+    
+    isSendingRef.current = true; // Synchronous lock immediately
+    
     const userMsg = input.trim();
     addJineMessage({ id: Date.now(), text: userMsg, sender: 'user' });
     setInput('');
@@ -420,6 +425,7 @@ export default function App() {
     } finally {
       setIsAiTyping(false);
       setIsAiResponding(false); // All messages shown → trigger motion revert
+      isSendingRef.current = false; // Release synchronous lock
     }
   };
 
