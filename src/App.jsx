@@ -58,7 +58,22 @@ export default function App() {
   const [input, setInput] = useState('');
   const [isAiTyping, setIsAiTyping] = useState(false);
   const [isCooldown, setIsCooldown] = useState(false);
+  const [jineTypingTimeout, setJineTypingTimeout] = useState(null);
   const jineChatRef = useRef(null);
+
+  const handleJineTyping = () => {
+    if (!settings.autoMotionEnabled) return;
+    if (petState !== 'kangel') return;
+    
+    if (jineTypingTimeout) clearTimeout(jineTypingTimeout);
+    
+    setPetAction('stream/56/0');
+    
+    const timeout = setTimeout(() => {
+      setPetAction('stream/0/0');
+    }, 2000);
+    setJineTypingTimeout(timeout);
+  };
 
   const AME_MOTIONS = [
     { label: '평온 (기본)', path: '0/0/0/0' },
@@ -119,7 +134,11 @@ export default function App() {
     { label: '광기 폭주', path: 'stream/_dame/craziness/0' },
     { label: '구토', path: 'stream/_dame/vomiting/0' },
     { label: '은버튼 리액션', path: 'stream/_dame/100ksliver/0' },
-    { label: '멘붕 (방송사고)', path: 'stream/_dame/b/0' }
+    { label: '멘붕 (방송사고)', path: 'stream/_dame/b/0' },
+    { label: '핸드폰', path: 'stream/56/0' },
+    { label: '어흥', path: 'stream/22/0' },
+    { label: '손가락물고하트', path: 'stream/24/0' },
+    { label: '츄~', path: 'stream/24/1' }
   ];
 
   const bgmRef = React.useRef(null);
@@ -422,7 +441,7 @@ export default function App() {
               <input 
                 type="text" 
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={(e) => { setInput(e.target.value); handleJineTyping(); }}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 disabled={isCooldown}
                 placeholder={isCooldown ? "잠시 대기 중..." : ""}
