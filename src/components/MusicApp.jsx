@@ -102,7 +102,8 @@ export default function MusicApp() {
       {/* Title */}
       <div style={{ position: 'absolute', top: '4px', left: '10px', color: '#fff', fontSize: '12px', fontFamily: 'DinkieBitmap, sans-serif' }}>Media Player</div>
       <button 
-        style={{ position: 'absolute', top: '4px', right: '6px', width: '16px', height: '16px', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 10 }} 
+        className="window-close-btn" 
+        style={{ right: '12px', top: '14px' }} 
         onClick={() => closeWindow('music')}
       ></button>
 
