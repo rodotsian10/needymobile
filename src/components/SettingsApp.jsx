@@ -185,18 +185,15 @@ export default function SettingsApp() {
         </div>
 
         {/* Notification Test */}
-        <div className="setting-item col" style={{ backgroundColor: '#f0f8ff', border: '2px solid #4488ff' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-            <span>알림 테스트 (알림 큐: {notificationQueue?.length ?? 0}개)</span>
-            <button
-              className={`toggle-btn ${notifCountdown !== null ? 'off' : 'on'}`}
-              onClick={handleNotifTest}
-              style={{ minWidth: '48px', fontWeight: 'bold', fontSize: '14px' }}
-            >
-              {notifCountdown !== null ? notifCountdown : '테스트'}
-            </button>
-          </div>
-          <span style={{ fontSize: '11px', color: '#666', marginTop: '4px' }}>테스트 누르면 5초 카운트다운 후 알림이 옵니다. (앞에서 나가서 테스트 가능)</span>
+        <div className="setting-item" style={{ backgroundColor: '#f0f8ff', border: '2px solid #4488ff' }}>
+          <span>알림 대사 큐 (잔여: {notificationQueue?.length ?? 0}개)</span>
+          <button
+            className={`toggle-btn ${notifCountdown !== null ? 'off' : 'on'}`}
+            onClick={handleNotifTest}
+            style={{ minWidth: '48px', fontWeight: 'bold', fontSize: '14px' }}
+          >
+            {notifCountdown !== null ? notifCountdown : 'TEST'}
+          </button>
         </div>
 
 
