@@ -9,31 +9,41 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(clients.claim());
 });
 
+let awayTimeoutId = null;
+
 // Listen for messages from the main app
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SCHEDULE_NOTIFICATION') {
     const { delayMs, title, body, tag } = event.data;
 
-    event.waitUntil(
-      new Promise((resolve) => {
-        setTimeout(async () => {
-          try {
-            await self.registration.showNotification(title, {
-              body: body,
-              icon: '/assets/images/icons/ame.png',
-              badge: '/assets/images/icons/ame.png',
-              tag: tag || 'ame-notification',
-              renotify: true,
-              vibrate: [200, 100, 200],
-              data: { url: self.location.origin }
-            });
-          } catch (e) {
-            console.error('[SW] 알림 표시 실패:', e);
-          }
-          resolve();
-        }, delayMs);
-      })
-    );
+    if (tag === 'ame-away' && awayTimeoutId) {
+      clearTimeout(awayTimeoutId);
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        await self.registration.showNotification(title, {
+          body: body,
+          icon: '/assets/images/icons/ame.png',
+          badge: '/assets/images/icons/ame.png',
+          tag: tag || 'ame-notification',
+          renotify: true,
+          vibrate: [200, 100, 200],
+          data: { url: self.location.origin }
+        });
+      } catch (e) {
+        console.error('[SW] 알림 표시 실패:', e);
+      }
+    }, delayMs);
+
+    if (tag === 'ame-away') {
+      awayTimeoutId = timer;
+    }
+  } else if (event.data && event.data.type === 'CANCEL_NOTIFICATION') {
+    if (event.data.tag === 'ame-away' && awayTimeoutId) {
+      clearTimeout(awayTimeoutId);
+      awayTimeoutId = null;
+    }
   }
 });
 

@@ -219,30 +219,48 @@ export default function App() {
 
   // ── Schedule away-notification when user leaves the app ──────────
   useEffect(() => {
-    const scheduleAwayNotification = () => {
-      if (!document.hidden) return;
+    let poppedMsg = null;
+
+    const handleAwayNotification = () => {
       const sw = swRef.current;
       if (!sw || !sw.active) return;
-      const queue = useAppStore.getState().notificationQueue;
-      const fallback = settings.menheraMode
-        ? '피짱 어디야ㅠ 왜 안와 나 버린거야'
-        : '피짱~ 나 보고싶지 않아? 빨리 들어와ㅠ';
-      const msg = queue.length > 0 ? queue[0] : fallback;
-      if (queue.length > 0) useAppStore.getState().popNotification();
 
-      const delayMs = Math.floor(Math.random() * 60 * 60 * 1000) + 60 * 60 * 1000; // 1~2시간
+      if (document.hidden) {
+        const queue = useAppStore.getState().notificationQueue;
+        const fallback = settings.menheraMode
+          ? '피짱 어디야ㅠ 왜 안와 나 버린거야'
+          : '피짱~ 나 보고싶지 않아? 빨리 들어와ㅠ';
+        
+        poppedMsg = queue.length > 0 ? queue[0] : null;
+        const msg = poppedMsg || fallback;
+        if (poppedMsg) useAppStore.getState().popNotification();
 
-      sw.active.postMessage({
-        type: 'SCHEDULE_NOTIFICATION',
-        delayMs,
-        title: '아메쨩 💌',
-        body: msg,
-        tag: `ame-away-${Date.now()}`
-      });
+        const delayMs = Math.floor(Math.random() * 60 * 60 * 1000) + 60 * 60 * 1000; // 1~2시간
+
+        sw.active.postMessage({
+          type: 'SCHEDULE_NOTIFICATION',
+          delayMs,
+          title: '아메쨩 💌',
+          body: msg,
+          tag: 'ame-away'
+        });
+      } else {
+        // Cancel the scheduled notification because user came back early
+        sw.active.postMessage({
+          type: 'CANCEL_NOTIFICATION',
+          tag: 'ame-away'
+        });
+        
+        // Put the message back into the queue
+        if (poppedMsg) {
+          useAppStore.getState().unshiftNotification(poppedMsg);
+          poppedMsg = null;
+        }
+      }
     };
 
-    document.addEventListener('visibilitychange', scheduleAwayNotification);
-    return () => document.removeEventListener('visibilitychange', scheduleAwayNotification);
+    document.addEventListener('visibilitychange', handleAwayNotification);
+    return () => document.removeEventListener('visibilitychange', handleAwayNotification);
   }, [settings.menheraMode]);
 
   const handleSend = async () => {

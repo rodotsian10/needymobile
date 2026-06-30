@@ -104,6 +104,9 @@ const useAppStore = create(
         });
         return popped;
       },
+      unshiftNotification: (msg) => set((state) => ({
+        notificationQueue: [msg, ...state.notificationQueue].slice(0, 20)
+      })),
       
       // Status
       stress: 50,
