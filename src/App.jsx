@@ -588,7 +588,7 @@ export default function App() {
           {/* Title */}
           <div style={{ position: 'absolute', top: '4px', left: '10px', color: '#fff', fontSize: '12px', fontFamily: 'DinkieBitmap, sans-serif' }}>Notepad</div>
           <button 
-            style={{ position: 'absolute', top: '4px', right: '6px', width: '16px', height: '16px', background: 'transparent', border: 'none', cursor: 'pointer' }} 
+            style={{ position: 'absolute', top: '4px', right: '6px', width: '16px', height: '16px', background: 'transparent', border: 'none', cursor: 'pointer', zIndex: 10 }} 
             onClick={() => closeWindow('notepad')}
             onTouchEnd={(e) => { e.stopPropagation(); playCloseSound(); closeWindow('notepad'); }}
           ></button>

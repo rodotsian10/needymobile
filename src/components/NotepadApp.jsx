@@ -128,7 +128,7 @@ export default function NotepadApp() {
       {/* Main Area */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', border: '2px solid #dfdfdf', borderTopColor: '#000', borderLeftColor: '#000', borderRightColor: '#fff', borderBottomColor: '#fff', backgroundColor: '#fff' }}>
         
-        {currentNoteId ? (
+        {currentNote ? (
           <>
             {/* Toolbar */}
             <div style={{ display: 'flex', borderBottom: '2px solid #dfdfdf', backgroundColor: '#dfdfdf', padding: '4px', gap: '4px', alignItems: 'center' }}>
