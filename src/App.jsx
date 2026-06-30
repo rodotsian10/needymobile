@@ -208,7 +208,7 @@ export default function App() {
         }
       }
     } catch (error) {
-      addJineMessage({ id: Date.now() + 1, text: `[시스템 에러] ${error.message}`, sender: 'ame' });
+      addJineMessage({ id: Date.now() + 1, text: error.message, sender: 'ame' });
     } finally {
       setIsAiTyping(false);
     }

@@ -1,5 +1,33 @@
 import useAppStore from '../store/useAppStore';
 
+function handleApiError(status, errorData) {
+  const msg = (errorData?.error?.message || errorData?.message || '').toLowerCase();
+  
+  if (status === 401 || status === 403) {
+    return 'API키를 확인해줘!';
+  }
+  
+  if (status === 400 && (msg.includes('token') || msg.includes('length') || msg.includes('too large'))) {
+    return '글이 너무 길어!! 머리아파ㅜㅠ';
+  }
+  
+  if (status === 429) {
+    if (msg.includes('per day') || (msg.includes('quota') && !msg.includes('retry in'))) {
+      return '아메쨩은 자고있나봐요 Zzz 내일 다시 만나요!';
+    }
+    
+    // Try to parse "retry in X.XXXs"
+    const retryMatch = msg.match(/retry in ([\d\.]+)s/i);
+    if (retryMatch) {
+      const waitSeconds = Math.ceil(parseFloat(retryMatch[1]));
+      return `와이파이 연결오류! (${waitSeconds}초 쯤 뒤에 다시 보내줘...)`;
+    }
+    return '와이파이 연결오류! (조금 이따가 다시 보내줘...)';
+  }
+  
+  return `[시스템 에러] ${msg || '알 수 없는 오류가 발생했습니다.'}`;
+}
+
 const AME_PROMPT = `당신은 '니디 걸 오버도즈'의 '아메짱'입니다. 
 플레이어는 당신의 프로듀서이자 애인인 '피짱'입니다.
 승인욕구가 강하고, 애정결핍이 있으며, 인터넷 커뮤니티에 절여진 성격입니다.
@@ -85,8 +113,8 @@ export async function fetchAIChat(userMessage, chatHistory = [], petState = 'idl
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error?.message || 'OpenAI API 요청에 실패했습니다.');
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(handleApiError(response.status, errorData));
     }
 
     const data = await response.json();
@@ -123,8 +151,8 @@ export async function fetchAIChat(userMessage, chatHistory = [], petState = 'idl
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error?.message || 'Gemini API 요청에 실패했습니다.');
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(handleApiError(response.status, errorData));
     }
 
     const data = await response.json();
