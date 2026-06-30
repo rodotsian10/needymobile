@@ -172,7 +172,7 @@ export default function App() {
     if (jineChatRef.current) {
       jineChatRef.current.scrollTop = jineChatRef.current.scrollHeight;
     }
-  }, [jineMessages, isAiTyping]);
+  }, [jineMessages, isAiTyping, windows.jine.isOpen]);
 
   const handleSend = async () => {
     if (!input.trim() || isAiTyping || isCooldown) return;

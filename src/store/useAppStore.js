@@ -48,8 +48,8 @@ const useAppStore = create(
       // Windows State
       windows: {
         ameCam: { isOpen: true, zIndex: 1 },
-        jine: { isOpen: true, zIndex: 2 },
-        status: { isOpen: true, zIndex: 3 },
+        jine: { isOpen: false, zIndex: 2 },
+        status: { isOpen: false, zIndex: 3 },
         director: { isOpen: false, zIndex: 4 },
         settings: { isOpen: false, zIndex: 5 },
         notepad: { isOpen: false, zIndex: 6 }
