@@ -641,7 +641,7 @@ export default function App() {
               <input 
                 type="text" 
                 value={input}
-                onChange={(e) => { setInput(e.target.value); handleJineTyping(); }}
+                onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 disabled={isCooldown}
                 placeholder={isCooldown ? "잠시 대기 중..." : ""}
