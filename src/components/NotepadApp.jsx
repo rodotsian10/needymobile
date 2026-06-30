@@ -11,6 +11,7 @@ export default function NotepadApp() {
   
   // Timeout for reverting motion when typing stops
   const [typingTimeout, setTypingTimeout] = useState(null);
+  const prevActionRef = useRef(null);
 
   const safeNotes = Array.isArray(notes) ? notes : [];
   const currentNote = safeNotes.find(n => n.id === currentNoteId);
@@ -58,6 +59,11 @@ export default function NotepadApp() {
   const handleTyping = () => {
     if (!settings.autoMotionEnabled) return;
     
+    // Save the previous action before we started typing
+    if (!typingTimeout && petAction !== '-1/1/0/0' && petAction !== 'stream/18/0') {
+      prevActionRef.current = petAction;
+    }
+
     if (typingTimeout) clearTimeout(typingTimeout);
     
     // Change motion when typing
@@ -69,10 +75,12 @@ export default function NotepadApp() {
 
     // Revert after 2 seconds of inactivity
     const timeout = setTimeout(() => {
-      if (petState === 'idle') {
-        setPetAction('0/0/0/0');
-      } else if (petState === 'kangel') {
-        setPetAction('stream/0/0');
+      setTypingTimeout(null);
+      if (prevActionRef.current) {
+        setPetAction(prevActionRef.current);
+      } else {
+        if (petState === 'idle') setPetAction('0/0/0/0');
+        else if (petState === 'kangel') setPetAction('stream/0/0');
       }
     }, 2000);
     

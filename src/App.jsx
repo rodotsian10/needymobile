@@ -59,18 +59,29 @@ export default function App() {
   const [isAiTyping, setIsAiTyping] = useState(false);
   const [isCooldown, setIsCooldown] = useState(false);
   const [jineTypingTimeout, setJineTypingTimeout] = useState(null);
+  const prevJineActionRef = useRef(null);
   const jineChatRef = useRef(null);
 
   const handleJineTyping = () => {
     if (!settings.autoMotionEnabled) return;
     if (petState !== 'kangel') return;
     
+    // Save previous action if we are just starting to type
+    if (!jineTypingTimeout && petAction !== 'stream/56/0') {
+      prevJineActionRef.current = petAction;
+    }
+
     if (jineTypingTimeout) clearTimeout(jineTypingTimeout);
     
     setPetAction('stream/56/0');
     
     const timeout = setTimeout(() => {
-      setPetAction('stream/0/0');
+      setJineTypingTimeout(null);
+      if (prevJineActionRef.current) {
+        setPetAction(prevJineActionRef.current);
+      } else {
+        setPetAction('stream/0/0');
+      }
     }, 2000);
     setJineTypingTimeout(timeout);
   };
