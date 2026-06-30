@@ -49,7 +49,10 @@ export default function App() {
     isBooting, windows, 
     openWindow, closeWindow, focusWindow,
     jineMessages, addJineMessage,
+    notificationQueue, addNotifications, popNotification,
     petState, petAction, setPetState, setPetAction, settings, updateSettings } = useAppStore();
+
+  const swRef = useRef(null);
 
   const [input, setInput] = useState('');
   const [isAiTyping, setIsAiTyping] = useState(false);
@@ -173,6 +176,73 @@ export default function App() {
       jineChatRef.current.scrollTop = jineChatRef.current.scrollHeight;
     }
   }, [jineMessages, isAiTyping, windows.jine.isOpen]);
+
+  // ── Service Worker Registration ──────────────────────────────────
+  useEffect(() => {
+    if (!isBooting && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => {
+          swRef.current = reg;
+          console.log('[SW] 등록 성공');
+        })
+        .catch(err => console.warn('[SW] 등록 실패:', err));
+    }
+  }, [isBooting]);
+
+  // ── BGM: pause when hidden, resume when visible ──────────────────
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (!bgmRef.current) return;
+      if (document.hidden) {
+        bgmRef.current.pause();
+      } else {
+        if (settings.bgmEnabled) bgmRef.current.play().catch(() => {});
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, [settings.bgmEnabled]);
+
+  // ── Notification Queue: refill when low and online ───────────────
+  useEffect(() => {
+    if (isBooting || !settings.apiKey) return;
+    if (notificationQueue.length < 5 && navigator.onLine) {
+      import('./utils/ai').then(({ fetchAiNotification }) => {
+        fetchAiNotification(settings.menheraMode, settings.apiKey, settings.apiProvider)
+          .then(lines => {
+            if (lines.length > 0) addNotifications(lines);
+          });
+      });
+    }
+  }, [isBooting, settings.apiKey]);
+
+  // ── Schedule away-notification when user leaves the app ──────────
+  useEffect(() => {
+    const scheduleAwayNotification = () => {
+      if (!document.hidden) return;
+      const sw = swRef.current;
+      if (!sw || !sw.active) return;
+      const queue = useAppStore.getState().notificationQueue;
+      const fallback = settings.menheraMode
+        ? '피짱 어디야ㅠ 왜 안와 나 버린거야'
+        : '피짱~ 나 보고싶지 않아? 빨리 들어와ㅠ';
+      const msg = queue.length > 0 ? queue[0] : fallback;
+      if (queue.length > 0) useAppStore.getState().popNotification();
+
+      const delayMs = Math.floor(Math.random() * 60 * 60 * 1000) + 60 * 60 * 1000; // 1~2시간
+
+      sw.active.postMessage({
+        type: 'SCHEDULE_NOTIFICATION',
+        delayMs,
+        title: '아메쨩 💌',
+        body: msg,
+        tag: `ame-away-${Date.now()}`
+      });
+    };
+
+    document.addEventListener('visibilitychange', scheduleAwayNotification);
+    return () => document.removeEventListener('visibilitychange', scheduleAwayNotification);
+  }, [settings.menheraMode]);
 
   const handleSend = async () => {
     if (!input.trim() || isAiTyping || isCooldown) return;

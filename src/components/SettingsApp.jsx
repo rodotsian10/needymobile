@@ -2,10 +2,11 @@ import React from 'react';
 import useAppStore from '../store/useAppStore';
 
 export default function SettingsApp() {
-  const { settings, updateSettings, clearJineMessages } = useAppStore();
+  const { settings, updateSettings, clearJineMessages, notificationQueue } = useAppStore();
   const [localApiKey, setLocalApiKey] = React.useState(settings.apiKey || '');
   const [localApiProvider, setLocalApiProvider] = React.useState(settings.apiProvider || 'gemini');
   const [showAlert, setShowAlert] = React.useState(false);
+  const [notifCountdown, setNotifCountdown] = React.useState(null); // null | number
 
   const handleSaveApi = () => {
     updateSettings({ apiKey: localApiKey, apiProvider: localApiProvider });
@@ -15,6 +16,47 @@ export default function SettingsApp() {
 
   const handleToggle = (key) => {
     updateSettings({ [key]: !settings[key] });
+  };
+
+  const handleNotifTest = async () => {
+    if (notifCountdown !== null) return; // already counting
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') {
+      alert('알림 권한이 거부되었습니다.');
+      return;
+    }
+
+    // Pick a notification message
+    const store = useAppStore.getState();
+    const queue = store.notificationQueue;
+    const fallback = settings.menheraMode
+      ? '피짱 어디야ㅠ 나 버린거야? 죽어버릴거야'
+      : '피짱~ 나 보고싶지 않아? 빨리 들어와ㅠ';
+    const msg = queue.length > 0 ? queue[0] : fallback;
+    if (queue.length > 0) store.popNotification();
+
+    // Send to Service Worker for scheduling
+    let count = 5;
+    setNotifCountdown(count);
+    const tick = setInterval(() => {
+      count--;
+      if (count <= 0) {
+        clearInterval(tick);
+        setNotifCountdown(null);
+        // Ask SW to show notification after 0ms (immediate)
+        navigator.serviceWorker.ready.then(sw => {
+          sw.active.postMessage({
+            type: 'SCHEDULE_NOTIFICATION',
+            delayMs: 100,
+            title: '아메쨩 💌 (테스트)',
+            body: msg,
+            tag: 'ame-test-notification'
+          });
+        });
+      } else {
+        setNotifCountdown(count);
+      }
+    }, 1000);
   };
 
   return (
@@ -140,6 +182,21 @@ export default function SettingsApp() {
           >
             {settings.autoMotionEnabled ? 'ON' : 'OFF'}
           </button>
+        </div>
+
+        {/* Notification Test */}
+        <div className="setting-item col" style={{ backgroundColor: '#f0f8ff', border: '2px solid #4488ff' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+            <span>알림 테스트 (알림 큐: {notificationQueue?.length ?? 0}개)</span>
+            <button
+              className={`toggle-btn ${notifCountdown !== null ? 'off' : 'on'}`}
+              onClick={handleNotifTest}
+              style={{ minWidth: '48px', fontWeight: 'bold', fontSize: '14px' }}
+            >
+              {notifCountdown !== null ? notifCountdown : '테스트'}
+            </button>
+          </div>
+          <span style={{ fontSize: '11px', color: '#666', marginTop: '4px' }}>테스트 누르면 5초 카운트다운 후 알림이 옵니다. (앞에서 나가서 테스트 가능)</span>
         </div>
 
 

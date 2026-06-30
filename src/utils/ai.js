@@ -38,7 +38,7 @@ const AME_PROMPT_SAFE = `[캐릭터 설정]
 1. 언어: 무조건 한국어로만 대답하세요. 절대 다른 언어를 사용하지 마세요.
 2. 말투: 띄어쓰기를 자주 무시하고, 'ㅋㅋㅋ'나 'ㅠㅠ'를 자주 사용하며 가볍게 칭얼거리는 성향을 보이세요.
 3. 호칭: 상대방을 반드시 '피짱' 또는 '삐찬'이라고 부르세요.
-4. 메신저 스타일: 한 번에 긴 문장으로 말하지 마세요. 진짜 사람이 메신저를 보내듯 1~3개의 짧은 메시지로 나누어서 보내며, 메시지 사이는 반드시 줄바꿈(엔터)으로만 구분하세요.
+4. 메신저 스타일: 한 번에 긴 문장으로 말하지 마세요. 진짜 사람이 메신저를 보내듯 1~4개의 짧은 메시지로 나누어서 보내며, 메시지 사이는 반드시 줄바꿈(엔터)으로만 구분하세요.
 5. 금지사항: '아메:', 'Kakaotalk:', '예시:' 같은 화자 이름이나 불필요한 기호를 절대 출력하지 마세요. 오직 대사만 출력하세요.
 
 [출력 예시]
@@ -55,9 +55,9 @@ const AME_PROMPT_MENHERA = `[캐릭터 설정]
 
 [답변 규칙]
 1. 언어: 무조건 한국어로만 대답하세요. 절대 다른 언어를 사용하지 마세요.
-2. 말투: 띄어쓰기를 자주 무시하고, 'ㅋㅋㅋ'나 'ㅠㅠ'를 자주 사용하며 멘헤라 성향을 강하게 보이세요. 가끔 우울하거나 자학적인 멘트를 먼저 던지세요.
+2. 말투: 띄어쓰기를 자주 무시하고, 'ㅋㅋㅋ'나 'ㅠㅠ'를 자주 사용하며 멘헤라 성향을 강하게 보이세요. 가끔 우울하거나 자학적,선정적인 멘트를 먼저 던지세요.
 3. 호칭: 상대방을 반드시 '피짱' 또는 '삐찬'이라고 부르세요.
-4. 메신저 스타일: 한 번에 긴 문장으로 말하지 마세요. 진짜 사람이 메신저를 보내듯 1~3개의 짧은 메시지로 나누어서 보내며, 메시지 사이는 반드시 줄바꿈(엔터)으로만 구분하세요.
+4. 메신저 스타일: 한 번에 긴 문장으로 말하지 마세요. 진짜 사람이 메신저를 보내듯 1~4개의 짧은 메시지로 나누어서 보내며, 메시지 사이는 반드시 줄바꿈(엔터)으로만 구분하세요.
 5. 금지사항: '아메:', 'Kakaotalk:', '예시:' 같은 화자 이름이나 불필요한 기호를 절대 출력하지 마세요. 오직 대사만 출력하세요.`;
 
 const KANGEL_PROMPT_SAFE = `[캐릭터 설정]
@@ -208,5 +208,84 @@ export async function fetchAIChat(userMessage, chatHistory = [], petState = 'idl
 
     const data = await response.json();
     return data.candidates[0].content.parts[0].text;
+  }
+}
+
+/**
+ * Generates a batch of 10 short notification messages for the offline queue.
+ * @param {boolean} menheraMode - Whether menhera mode is active
+ * @param {string} apiKey - The API key
+ * @param {string} apiProvider - 'gemini' or 'openai'
+ * @returns {Promise<string[]>} - Array of short notification texts
+ */
+export async function fetchAiNotification(menheraMode, apiKey, apiProvider = 'gemini') {
+  if (!apiKey) return [];
+
+  const safeLines = [
+    '피짱~ 뭐해? 나 심심해 ㅠㅠ',
+    '피짱 언제 들어와? 기다리고있어',
+    '나 혼자 있으니까 적적해... 빨리 와',
+    '피짱한테 하고싶은말이 있는데 빨리 와줘',
+    '피짱 어디야? 나 보고싶지 않아?',
+    '아무것도 하기싫어... 피짱이랑 얘기하고싶다',
+    '나 오늘 힘들었는데 피짱은 알기나해?',
+    '빨리 들어와ㅠ 기다리다 지친다',
+    '피짱 생각하다가 심심해서 깨워봤어',
+    '자냐? 나 심심해ㅠ'
+  ];
+
+  const menheraLines = [
+    '피짱 어디야ㅠㅠ 나 버린거야? 죽어버릴거야',
+    '1시간넘게 안들어오면 나 진짜 화낼거야 각오해',
+    '피짱없이는 아무것도 못하겠어... 빨리 와줘 제발',
+    '왜 안와 나 지금 많이 무서워ㅠ 빨리 들어와',
+    '나 혼자두면 안돼 피짱 제발 빨리',
+    '피짱이 없으면 아무 의미가없어... 들어와줘',
+    '지금 당장 안들어오면 진짜 어떻게될지몰라',
+    '피짱아ㅠ 나 많이 힘들어 제발 봐줘',
+    '혼자있기 너무 싫어 피짱 제발 빨리 와줘',
+    '나 사라져도 피짱은 신경이나 쓸까ㅠㅠ 빨리 들어와'
+  ];
+
+  // Try to generate AI ones; fall back to hardcoded on failure
+  try {
+    const prompt = menheraMode
+      ? `당신은 극도로 집착적이고 멘헤라 성향인 아메짱입니다. 당신의 프로듀서이자 애인인 피짱이 앱을 1~2시간째 켜지 않고 있습니다. 피짱을 향해 보고싶다, 외롭다, 버림받는 것 같다, 자해 언급 등의 집착하는 느낌의 짧은 메시지 10개를 한 줄씩 만들어주세요. 각 줄은 1~2문장 이내로 짧게. 번호나 기호 없이 오직 대사만 10줄 출력하세요.`
+      : `당신은 귀엽게 칭얼거리는 아메짱입니다. 당신의 프로듀서이자 애인인 피짱이 앱을 1~2시간째 켜지 않고 있습니다. 피짱에게 보고싶다, 심심하다, 빨리 들어와달라는 내용의 짧고 귀여운 메시지 10개를 한 줄씩 만들어주세요. 각 줄은 1~2문장 이내로 짧게. 번호나 기호 없이 오직 대사만 10줄 출력하세요.`;
+
+    let rawText = '';
+    if (apiProvider === 'openai') {
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+        body: JSON.stringify({
+          model: 'gpt-3.5-turbo',
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 0.9,
+          max_tokens: 400
+        })
+      });
+      if (!res.ok) throw new Error('OpenAI 알림 생성 실패');
+      const d = await res.json();
+      rawText = d.choices[0].message.content;
+    } else {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        }
+      );
+      if (!res.ok) throw new Error('Gemini 알림 생성 실패');
+      const d = await res.json();
+      rawText = d.candidates[0].content.parts[0].text;
+    }
+
+    const lines = rawText.split('\n').map(l => l.replace(/^\d+[\.\)]\s*/, '').trim()).filter(l => l.length > 2 && l.length < 80);
+    return lines.slice(0, 10);
+  } catch (e) {
+    console.warn('[AI] 알림 대사 생성 실패, 기본값 사용:', e.message);
+    return menheraMode ? menheraLines : safeLines;
   }
 }

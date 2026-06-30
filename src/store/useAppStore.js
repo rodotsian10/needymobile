@@ -89,6 +89,21 @@ const useAppStore = create(
       ],
       addJineMessage: (msg) => set((state) => ({ jineMessages: [...state.jineMessages, msg] })),
       clearJineMessages: () => set({ jineMessages: [] }),
+
+      // Notification Queue (pre-generated AI lines stored offline)
+      notificationQueue: [],
+      addNotifications: (lines) => set((state) => ({
+        notificationQueue: [...state.notificationQueue, ...lines].slice(0, 15)
+      })),
+      popNotification: () => {
+        let popped = null;
+        useAppStore.setState((state) => {
+          if (state.notificationQueue.length === 0) return state;
+          popped = state.notificationQueue[0];
+          return { notificationQueue: state.notificationQueue.slice(1) };
+        });
+        return popped;
+      },
       
       // Status
       stress: 50,
@@ -123,6 +138,7 @@ const useAppStore = create(
         settings: state.settings,
         notes: state.notes,
         jineMessages: state.jineMessages,
+        notificationQueue: state.notificationQueue,
         affection: state.affection,
         stress: state.stress
       }),
