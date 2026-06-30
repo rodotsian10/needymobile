@@ -4,6 +4,7 @@ import useAppStore from './store/useAppStore';
 import AnimatedPet from './components/AnimatedPet';
 import SettingsApp from './components/SettingsApp';
 import NotepadApp from './components/NotepadApp';
+import MusicApp from './components/MusicApp';
 import './index.css';
 import { playOpenSound, playCloseSound, playExecuteSound, playJineSendSound, playTransformSound, stopTransformSound, playEndHaishinSound } from './utils/audio';
 
@@ -350,6 +351,9 @@ export default function App() {
         <div className="icon" onClick={() => { playOpenSound(); openWindow('settings'); }}>
           <img src="/assets/images/jine/button_gear.png" alt="icon" style={{width: 60, height: 60, imageRendering: 'pixelated' }}/><br/>Settings
         </div>
+        <div className="icon" onClick={() => { playOpenSound(); openWindow('music'); }}>
+          <img src="/assets/images/icons/media.png" alt="icon" style={{width: 60, height: 60, imageRendering: 'pixelated' }}/><br/>Media
+        </div>
       </div>
 
       {/* Ame Webcam Window */}
@@ -689,6 +693,9 @@ export default function App() {
           </div>
         </Rnd>
       )}
+
+      {/* Music App Window */}
+      <MusicApp />
     </div>
   );
 }

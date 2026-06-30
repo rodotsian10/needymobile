@@ -53,7 +53,8 @@ const useAppStore = create(
         status: { isOpen: false, zIndex: 3 },
         director: { isOpen: false, zIndex: 4 },
         settings: { isOpen: false, zIndex: 5 },
-        notepad: { isOpen: false, zIndex: 6 }
+        notepad: { isOpen: false, zIndex: 6 },
+        music: { isOpen: false, zIndex: 7 }
       },
       
       // Window Controls
