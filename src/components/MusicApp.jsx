@@ -18,7 +18,16 @@ export default function MusicApp() {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(50);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const audioRef = useRef(null);
+
+  const formatTime = (time) => {
+    if (isNaN(time) || time < 0) return '0:00';
+    const m = Math.floor(time / 60);
+    const s = Math.floor(time % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  };
 
   // Stop global BGM when music app plays something
   useEffect(() => {
@@ -77,9 +86,9 @@ export default function MusicApp() {
 
   return (
     <Rnd
-      default={{ x: 100, y: 100, width: 340, height: 160 }}
+      default={{ x: 100, y: 100, width: 340, height: 180 }}
       minWidth={340}
-      minHeight={160}
+      minHeight={180}
       bounds="parent"
       style={{ zIndex, display: 'flex', flexDirection: 'column' }}
       className="os-window"
@@ -131,27 +140,59 @@ export default function MusicApp() {
             
             {/* Controls */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <button 
-                onClick={handlePrev}
-                style={{ background: 'none', border: 'none', color: '#5c22c7', fontSize: '24px', cursor: 'pointer', padding: 0, lineHeight: 1 }}
-              >
-                ⏮
-              </button>
-              <button 
-                onClick={handlePlayPause}
-                style={{ background: 'none', border: 'none', color: '#5c22c7', fontSize: '24px', cursor: 'pointer', padding: 0, lineHeight: 1 }}
-              >
-                {isPlaying ? '⏸' : '▶'}
-              </button>
-              <button 
-                onClick={handleNext}
-                style={{ background: 'none', border: 'none', color: '#5c22c7', fontSize: '24px', cursor: 'pointer', padding: 0, lineHeight: 1 }}
-              >
-                ⏭
-              </button>
-              <div style={{ marginLeft: 'auto', color: '#5c22c7', fontSize: '12px', fontFamily: 'PixelMplus10' }}>
-                / 3:32
+              <button onClick={handlePrev} style={{ background: 'none', border: 'none', color: '#5c22c7', fontSize: '24px', cursor: 'pointer', padding: 0, lineHeight: 1 }}>⏮</button>
+              <button onClick={handlePlayPause} style={{ background: 'none', border: 'none', color: '#5c22c7', fontSize: '24px', cursor: 'pointer', padding: 0, lineHeight: 1 }}>{isPlaying ? '⏸' : '▶'}</button>
+              <button onClick={handleNext} style={{ background: 'none', border: 'none', color: '#5c22c7', fontSize: '24px', cursor: 'pointer', padding: 0, lineHeight: 1 }}>⏭</button>
+            </div>
+
+            {/* Progress & Volume Bars */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '4px' }}>
+              
+              {/* Progress */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontFamily: 'PixelMplus10', color: '#5c22c7' }}>
+                <span style={{ width: '28px' }}>{formatTime(currentTime)}</span>
+                <div 
+                  style={{ flex: 1, height: '8px', border: '1px solid #5c22c7', backgroundColor: '#dfdfdf', cursor: 'pointer', display: 'flex' }}
+                  onClick={(e) => {
+                    if (!audioRef.current || !duration) return;
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const newTime = ((e.clientX - rect.left) / rect.width) * duration;
+                    audioRef.current.currentTime = newTime;
+                    setCurrentTime(newTime);
+                  }}
+                >
+                  <div style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%`, backgroundColor: '#ff88dd', borderRight: '1px solid #5c22c7' }}></div>
+                </div>
+                <span style={{ width: '28px', textAlign: 'right' }}>{formatTime(duration)}</span>
               </div>
+
+              {/* Volume */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontFamily: 'PixelMplus10', color: '#5c22c7' }}>
+                <span style={{ width: '28px' }}>VOL</span>
+                <div 
+                  style={{ flex: 1, height: '6px', border: '1px solid #5c22c7', backgroundColor: '#dfdfdf', cursor: 'pointer', display: 'flex' }}
+                  onMouseDown={(e) => {
+                    const updateVol = (clientX, rect) => {
+                      const newVol = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
+                      setVolume(newVol);
+                    };
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    updateVol(e.clientX, rect);
+                    
+                    const onMouseMove = (moveEvent) => updateVol(moveEvent.clientX, rect);
+                    const onMouseUp = () => {
+                      window.removeEventListener('mousemove', onMouseMove);
+                      window.removeEventListener('mouseup', onMouseUp);
+                    };
+                    window.addEventListener('mousemove', onMouseMove);
+                    window.addEventListener('mouseup', onMouseUp);
+                  }}
+                >
+                  <div style={{ width: `${volume}%`, backgroundColor: '#5c22c7' }}></div>
+                </div>
+                <span style={{ width: '28px', textAlign: 'right' }}>{Math.round(volume)}</span>
+              </div>
+
             </div>
           </div>
         </div>
@@ -170,6 +211,8 @@ export default function MusicApp() {
         ref={audioRef}
         src={`/assets/audio/${PLAYLIST[currentTrackIndex].file}`}
         onEnded={handleTrackEnded}
+        onTimeUpdate={(e) => setCurrentTime(e.target.currentTime)}
+        onLoadedMetadata={(e) => setDuration(e.target.duration)}
       />
     </Rnd>
   );
