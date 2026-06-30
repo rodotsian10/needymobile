@@ -67,7 +67,7 @@ export default function SettingsApp() {
                 body: msg,
                 id: Date.now(),
                 schedule: { at: new Date(Date.now() + 100) },
-                smallIcon: 'ic_stat_icon_config_sample'
+                smallIcon: 'ic_launcher'
               }
             ]
           });

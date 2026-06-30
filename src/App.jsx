@@ -404,7 +404,7 @@ export default function App() {
                   body: msg,
                   id: 999, // static ID for the away notification
                   schedule: { at: new Date(Date.now() + delayMs) },
-                  smallIcon: 'ic_stat_icon_config_sample'
+                  smallIcon: 'ic_launcher'
                 }
               ]
             });
