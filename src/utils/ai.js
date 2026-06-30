@@ -16,15 +16,16 @@ const KANGEL_PROMPT = `당신은 '니디 걸 오버도즈'의 인터넷 엔젤 '
 메시지는 메신저로 팬에게 개인톡을 보내주는 느낌으로 과장된 감정 표현을 섞어 한글로 작성하세요. 너무 길지 않게 1~3문장으로 대답하세요.`;
 
 /**
- * Sends a message to the Gemini API and returns the response string.
+ * Sends a message to the chosen AI API and returns the response string.
  * @param {string} userMessage - The new message from the user
- * @param {Array} chatHistory - Array of previous messages { role: 'user'|'model', parts: [{ text: '...' }] }
+ * @param {Array} chatHistory - Array of previous messages
  * @param {string} petState - Current state of the pet ('idle', 'kangel', etc.)
  * @returns {Promise<string>}
  */
-export async function fetchGeminiChat(userMessage, chatHistory = [], petState = 'idle') {
+export async function fetchAIChat(userMessage, chatHistory = [], petState = 'idle') {
   const { settings } = useAppStore.getState();
   const apiKey = settings.apiKey;
+  const apiProvider = settings.apiProvider || 'gemini';
 
   if (!apiKey) {
     throw new Error('API Key가 없습니다. 설정 창에서 API Key를 입력해주세요.');
@@ -33,32 +34,66 @@ export async function fetchGeminiChat(userMessage, chatHistory = [], petState = 
   // Determine Persona
   const systemInstruction = (petState === 'kangel' || petState === 'streaming') ? KANGEL_PROMPT : AME_PROMPT;
 
-  // Format history for Gemini API
-  // Gemini expects: { role: "user" | "model", parts: [{ text: "..." }] }
-  const formattedHistory = chatHistory.map(msg => ({
-    role: msg.sender === 'user' ? 'user' : 'model',
-    parts: [{ text: msg.text }]
-  }));
+  if (apiProvider === 'openai') {
+    // OpenAI API Format
+    const formattedHistory = chatHistory.map(msg => ({
+      role: msg.sender === 'user' ? 'user' : 'assistant',
+      content: msg.text
+    }));
 
-  formattedHistory.push({
-    role: 'user',
-    parts: [{ text: userMessage }]
-  });
+    // Add system prompt at the beginning
+    formattedHistory.unshift({ role: 'system', content: systemInstruction });
+    formattedHistory.push({ role: 'user', content: userMessage });
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
-  const payload = {
-    system_instruction: {
-      parts: [{ text: systemInstruction }]
-    },
-    contents: formattedHistory,
-    generationConfig: {
+    const url = 'https://api.openai.com/v1/chat/completions';
+    const payload = {
+      model: 'gpt-4o-mini',
+      messages: formattedHistory,
       temperature: 0.9,
-      maxOutputTokens: 150, // Keep responses short like a messenger
-    }
-  };
+      max_tokens: 150
+    };
 
-  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || 'OpenAI API 요청에 실패했습니다.');
+    }
+
+    const data = await response.json();
+    return data.choices[0].message.content;
+
+  } else {
+    // Gemini API Format
+    const formattedHistory = chatHistory.map(msg => ({
+      role: msg.sender === 'user' ? 'user' : 'model',
+      parts: [{ text: msg.text }]
+    }));
+
+    formattedHistory.push({
+      role: 'user',
+      parts: [{ text: userMessage }]
+    });
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const payload = {
+      system_instruction: {
+        parts: [{ text: systemInstruction }]
+      },
+      contents: formattedHistory,
+      generationConfig: {
+        temperature: 0.9,
+        maxOutputTokens: 150,
+      }
+    };
+
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -67,14 +102,10 @@ export async function fetchGeminiChat(userMessage, chatHistory = [], petState = 
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('Gemini API Error:', errorData);
-      throw new Error(errorData.error?.message || 'API 요청에 실패했습니다.');
+      throw new Error(errorData.error?.message || 'Gemini API 요청에 실패했습니다.');
     }
 
     const data = await response.json();
     return data.candidates[0].content.parts[0].text;
-  } catch (error) {
-    console.error('AI Request failed:', error);
-    throw error;
   }
 }

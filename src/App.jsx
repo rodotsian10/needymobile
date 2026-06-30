@@ -176,8 +176,8 @@ export default function App() {
     setIsAiTyping(true);
     
     try {
-      const { fetchGeminiChat } = await import('./utils/ai');
-      const response = await fetchGeminiChat(userMsg, jineMessages, petState);
+      const { fetchAIChat } = await import('./utils/ai');
+      const response = await fetchAIChat(userMsg, jineMessages, petState);
       
       const audio = new Audio('/assets/audio/jine_send_stamp.wav');
       audio.play().catch(()=>{});
