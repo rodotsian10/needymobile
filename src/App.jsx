@@ -238,7 +238,7 @@ export default function App() {
   }
 
   return (
-    <div className="desktop" style={{ transform: 'scale(0.7)', transformOrigin: 'top left', width: '142.85vw', height: '142.85vh' }}>
+    <div className="desktop" style={{ transform: 'scale(0.7)', transformOrigin: 'top left', width: '142.85vw', height: 'max(142.85vh, 142.85lvh)' }}>
       {/* Desktop Icons */}
       <div className="desktop-icons">
         <div className="icon" onClick={() => { playOpenSound(); openWindow('ameCam'); }}>

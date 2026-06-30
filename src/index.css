@@ -17,8 +17,8 @@ body, html, #root {
   margin: 0;
   padding: 0;
   width: 100vw;
-  height: 100vh;
-  height: 100dvh;
+  height: max(100vh, 100lvh);
+  background-color: #000;
   font-family: 'PixelMplus10', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   overflow: hidden;
   position: fixed;
@@ -42,7 +42,7 @@ body, html, #root {
 /* Desktop Environment */
 .desktop {
   width: 100vw;
-  height: 100vh;
+  height: max(100vh, 100lvh);
   background-color: #008080;
   background-image: url('/assets/images/desktop_bg.png');
   background-size: cover;
