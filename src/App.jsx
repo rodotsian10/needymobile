@@ -383,7 +383,7 @@ export default function App() {
     setIsCooldown(true);
     setTimeout(() => {
       setIsCooldown(false);
-    }, 6000);
+    }, 4000);
     
     try {
       const { fetchAIChat } = await import('./utils/ai');
