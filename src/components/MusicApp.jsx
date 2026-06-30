@@ -3,11 +3,11 @@ import { Rnd } from 'react-rnd';
 import useAppStore from '../store/useAppStore';
 
 const PLAYLIST = [
-  { id: 1, title: '큐비즘 (Qvism)', file: 'cubism.mp3' },
-  { id: 2, title: '큐비비비비즘', file: 'cubibibibism.mp3' },
-  { id: 3, title: '인터넷 야메로', file: 'INTERNET YAMERO.mp3' },
-  { id: 4, title: '인터넷 오버도즈', file: 'INTERNET OVERDOSE feat. KOTOKO.mp3' },
-  { id: 5, title: '문 레인보우 버터플라이', file: 'Moon rainbow butterfly.mp3' }
+  { id: 1, title: 'cubism', file: 'cubism.mp3', cover: 'cubism.png' },
+  { id: 2, title: 'cubibibibism', file: 'cubibibibism.mp3', cover: 'cubism.png' },
+  { id: 3, title: 'INTERNET YAMERO', file: 'INTERNET YAMERO.mp3', cover: 'yamero.jpg' },
+  { id: 4, title: 'INTERNET OVERDOSE feat. KOTOKO', file: 'INTERNET OVERDOSE feat. KOTOKO.mp3', cover: 'overdose.jpg' },
+  { id: 5, title: 'Moon rainbow butterfly', file: 'Moon rainbow butterfly.mp3', cover: 'moon.png' }
 ];
 
 export default function MusicApp() {
@@ -115,9 +115,9 @@ export default function MusicApp() {
 
         {/* Main Content Area */}
         <div style={{ flex: 1, backgroundColor: '#fff', border: '2px solid #000080', display: 'flex', padding: '6px', gap: '10px' }}>
-          {/* Album Art Placeholder */}
+          {/* Album Art */}
           <div style={{ width: '64px', height: '64px', backgroundColor: '#ccc', border: '1px solid #000080', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-            <img src="/assets/images/icons/media.png" alt="album" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.5 }} />
+            <img src={`/assets/images/music/${PLAYLIST[currentTrackIndex].cover}`} alt="album" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
 
           {/* Track Info & Controls */}
