@@ -175,7 +175,8 @@ export default function MusicApp() {
                 </div>
                 <span style={{ width: '28px', textAlign: 'right' }}>{Math.round(volume)}</span>
               </div>
-
+            </div>
+          </div>
       </div>
 
       <audio 
