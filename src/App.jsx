@@ -308,16 +308,7 @@ export default function App() {
     }
   }, [isBooting]);
 
-  // ── Mobile Keyboard Scroll Lock ──────────────────────────────────
-  useEffect(() => {
-    const preventScroll = () => {
-      if (window.scrollY > 0) {
-        window.scrollTo(0, 0);
-      }
-    };
-    window.addEventListener('scroll', preventScroll);
-    return () => window.removeEventListener('scroll', preventScroll);
-  }, []);
+  // ── (Removed harmful JS scroll lock here) ──────────────────────
 
   // ── Global interaction listener for Mobile BGM Autoplay ──────────
   useEffect(() => {
