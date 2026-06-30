@@ -53,6 +53,7 @@ export default function App() {
 
   const [input, setInput] = useState('');
   const [isAiTyping, setIsAiTyping] = useState(false);
+  const [isCooldown, setIsCooldown] = useState(false);
   const jineChatRef = useRef(null);
 
   const AME_MOTIONS = [
@@ -174,13 +175,17 @@ export default function App() {
   }, [jineMessages, isAiTyping]);
 
   const handleSend = async () => {
-    if (!input.trim() || isAiTyping) return;
+    if (!input.trim() || isAiTyping || isCooldown) return;
     const userMsg = input.trim();
     addJineMessage({ id: Date.now(), text: userMsg, sender: 'user' });
     setInput('');
     playJineSendSound();
     
     setIsAiTyping(true);
+    setIsCooldown(true);
+    setTimeout(() => {
+      setIsCooldown(false);
+    }, 4000);
     
     try {
       const { fetchAIChat } = await import('./utils/ai');
@@ -326,8 +331,10 @@ export default function App() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                disabled={isCooldown}
+                placeholder={isCooldown ? "잠시 대기 중..." : ""}
               />
-              <button onClick={handleSend}>전송</button>
+              <button onClick={handleSend} disabled={isCooldown}>전송</button>
             </div>
           </div>
         </Rnd>
