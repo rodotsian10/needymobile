@@ -32,31 +32,8 @@ jobs:
     - name: Install Capacitor CLI & Plugins
       run: npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/keyboard
 
-    - name: Init Capacitor (non-interactive)
-      run: npx cap init "AmeOS" "com.ameos.app" --web-dir dist --no-interactive || true
-
-    - name: Write capacitor.config.json
-      run: |
-        cat > capacitor.config.json << 'EOF'
-        {
-          "appId": "com.ameos.app",
-          "appName": "AmeOS",
-          "webDir": "dist",
-          "server": {
-            "androidScheme": "https"
-          },
-          "plugins": {
-            "Keyboard": {
-              "resize": "none"
-            }
-          }
-        }
-        EOF
-
-    - name: Add Android Platform
-      run: |
-        npx cap add android
-        npx cap sync android
+    - name: Sync Android Platform
+      run: npx cap sync android
 
     - name: Generate App Icons from ame.png
       run: |
