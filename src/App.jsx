@@ -62,6 +62,8 @@ export default function App() {
   const [jineTypingTimeout, setJineTypingTimeout] = useState(null);
   const prevJineActionRef = useRef(null);
   const jineChatRef = useRef(null);
+  const anxietyStreakRef = useRef(0); // Tracks consecutive anxiety/negative emotions
+  const currentEmotionActionRef = useRef(null); // Tracks which motion is active during AI response
 
   // Maps emotion string from AI to petAction path
   const getEmotionAction = (emotion) => {
@@ -78,38 +80,40 @@ export default function App() {
     }
   };
 
-  // AI response motion: show emotion, then revert to base or music motion after 4s
+  // AI response motion for Ame: persists until isAiTyping ends
+  // Tracks consecutive negative emotions → triggers 구토 at streak >= 3
   const triggerAmeEmotionMotion = (emotion) => {
     if (!settings.autoMotionEnabled || petState !== 'idle') return;
-    const action = getEmotionAction(emotion);
+
+    // Track anxiety/negative streak
+    const isNegative = ['불안', '우울', '짜증', '역거움'].includes(emotion);
+    if (isNegative) {
+      anxietyStreakRef.current += 1;
+    } else {
+      anxietyStreakRef.current = 0;
+    }
+
+    // Trigger vomit if anxiety streak reaches 3+
+    let action;
+    if (anxietyStreakRef.current >= 3) {
+      action = '1/-1/-1/1'; // 구토 (vomit)
+    } else {
+      action = getEmotionAction(emotion);
+    }
+
     if (!action) return;
+    currentEmotionActionRef.current = action;
     setPetAction(action);
-    setTimeout(() => {
-      // Revert to headphone if music is still playing, else base
-      if (isMusicPlaying) {
-        setPetAction('-1/-1/-1/0');
-      } else {
-        setPetAction('0/0/0/0');
-      }
-    }, 4000);
+    // Motion will revert in the isAiTyping useEffect when AI finishes
   };
 
-  // Kangel AI response motion: show phone typing, then revert after 3s
+  // Kangel AI response motion: show phone typing, persists until AI done
   const triggerKangelChatMotion = () => {
     if (!settings.autoMotionEnabled || petState !== 'kangel') return;
     prevJineActionRef.current = prevJineActionRef.current || petAction;
     setPetAction('stream/56/0');
-    if (jineTypingTimeout) clearTimeout(jineTypingTimeout);
-    const timeout = setTimeout(() => {
-      setJineTypingTimeout(null);
-      if (isMusicPlaying) {
-        setPetAction('stream/7/0'); // ASMR when music playing
-      } else {
-        setPetAction(prevJineActionRef.current || 'stream/0/0');
-        prevJineActionRef.current = null;
-      }
-    }, 3000);
-    setJineTypingTimeout(timeout);
+    currentEmotionActionRef.current = 'stream/56/0';
+    // Motion will revert in the isAiTyping useEffect when AI finishes
   };
 
   const AME_MOTIONS = [
@@ -251,6 +255,28 @@ export default function App() {
       }
     }
   }, [isMusicPlaying]);
+
+  // When AI finishes typing, revert emotion motion back to base / music motion
+  useEffect(() => {
+    if (isAiTyping) return; // Only fire when AI stops
+    if (!currentEmotionActionRef.current) return; // No emotion motion was active
+    currentEmotionActionRef.current = null;
+
+    if (petState === 'idle') {
+      if (isMusicPlaying) {
+        setPetAction('-1/-1/-1/0');
+      } else {
+        setPetAction('0/0/0/0');
+      }
+    } else if (petState === 'kangel') {
+      if (isMusicPlaying) {
+        setPetAction('stream/7/0');
+      } else {
+        setPetAction(prevJineActionRef.current || 'stream/0/0');
+        prevJineActionRef.current = null;
+      }
+    }
+  }, [isAiTyping]);
 
   useEffect(() => {
     if (jineChatRef.current) {
