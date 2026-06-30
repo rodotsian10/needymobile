@@ -87,44 +87,26 @@ export default function MusicApp() {
   return (
     <Rnd
       scale={0.7}
-      default={{ x: 100, y: 100, width: 340, height: 180 }}
-      minWidth={340}
-      minHeight={180}
       bounds="parent"
-      style={{ zIndex, display: 'flex', flexDirection: 'column' }}
+      default={{ x: 100, y: 100, width: 340, height: 180 }}
+      enableResizing={false}
+      style={{ zIndex }}
       className="os-window"
       onMouseDown={() => focusWindow('music')}
-      dragHandleClassName="title-bar"
+      dragHandleClassName="window-drag-area"
     >
-      <div style={{ backgroundColor: '#4df9df', padding: '2px', height: '100%', boxSizing: 'border-box', border: '2px solid #000080', display: 'flex', flexDirection: 'column' }}>
-        
-        {/* Title Bar */}
-        <div className="title-bar" style={{ backgroundColor: '#dfccff', display: 'flex', alignItems: 'center', padding: '2px 4px', border: '2px solid #000080', borderBottom: 'none' }}>
-          <div style={{ width: '12px', height: '12px', backgroundColor: '#5c22c7', marginRight: '6px' }}></div>
-          <span style={{ color: '#5c22c7', fontSize: '14px', fontFamily: 'DinkieBitmap, sans-serif', fontWeight: 'bold' }}>Media Player</span>
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: '2px' }}>
-            <button
-              style={{
-                width: '18px', height: '18px', backgroundColor: '#dfccff', border: '2px solid #5c22c7',
-                color: '#5c22c7', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0
-              }}
-            >
-              ⚙
-            </button>
-            <button
-              onClick={() => closeWindow('music')}
-              style={{
-                width: '18px', height: '18px', backgroundColor: '#dfccff', border: '2px solid #5c22c7',
-                color: '#5c22c7', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0
-              }}
-            >
-              X
-            </button>
-          </div>
-        </div>
+      <img src="/assets/images/border/window-jinesmall.png" alt="bg" style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: -1, pointerEvents: 'none' }} />
+      <div className="window-drag-area" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '24px', cursor: 'pointer' }}></div>
+      
+      {/* Title */}
+      <div style={{ position: 'absolute', top: '4px', left: '10px', color: '#fff', fontSize: '12px', fontFamily: 'DinkieBitmap, sans-serif' }}>Media Player</div>
+      <button 
+        style={{ position: 'absolute', top: '4px', right: '6px', width: '16px', height: '16px', background: 'transparent', border: 'none', cursor: 'pointer' }} 
+        onClick={() => closeWindow('music')}
+      ></button>
 
-        {/* Main Content Area */}
-        <div style={{ flex: 1, backgroundColor: '#fff', border: '2px solid #000080', display: 'flex', padding: '6px', gap: '10px' }}>
+      {/* Content Area */}
+      <div style={{ position: 'absolute', top: '30px', left: '8px', right: '8px', bottom: '8px', backgroundColor: '#fff', display: 'flex', flexDirection: 'column', padding: '6px', gap: '6px', border: '2px inset #dfdfdf' }}>
           {/* Album Art */}
           <div style={{ width: '64px', height: '64px', backgroundColor: '#ccc', border: '1px solid #000080', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
             <img src={`/assets/images/music/${PLAYLIST[currentTrackIndex].cover}`} alt="album" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -193,18 +175,6 @@ export default function MusicApp() {
                 </div>
                 <span style={{ width: '28px', textAlign: 'right' }}>{Math.round(volume)}</span>
               </div>
-
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Progress Bar */}
-        <div style={{ height: '12px', backgroundColor: '#4df9df', display: 'flex', alignItems: 'center', gap: '2px', marginTop: '2px' }}>
-          <div style={{ width: '25%', height: '8px', backgroundColor: '#ff88dd', border: '1px solid #5c22c7' }}></div>
-          <div style={{ width: '8px', height: '8px', backgroundColor: '#5c22c7', borderRadius: '50%' }}></div>
-          <div style={{ width: '8px', height: '8px', backgroundColor: '#5c22c7', borderRadius: '50%' }}></div>
-          <div style={{ width: '8px', height: '8px', backgroundColor: '#5c22c7', borderRadius: '50%' }}></div>
-        </div>
 
       </div>
 

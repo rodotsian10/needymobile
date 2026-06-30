@@ -461,27 +461,26 @@ export default function App() {
         <Rnd
           scale={0.7}
           bounds="parent"
-          default={{ x: 40, y: 40, width: 400, height: 400 }}
-          style={{ zIndex: windows.notepad.zIndex, backgroundColor: '#fff', border: '2px solid #dfdfdf', borderTopColor: '#fff', borderLeftColor: '#fff', borderRightColor: '#000', borderBottomColor: '#000' }}
+          default={{ x: 40, y: 40, width: 400, height: 440 }}
+          style={{ zIndex: windows.notepad.zIndex }}
           onMouseDown={() => focusWindow('notepad')}
-          enableResizing={true}
+          enableResizing={false}
           dragHandleClassName="window-drag-area"
           className="os-window"
         >
-          {/* Classic Windows Title Bar */}
-          <div className="window-drag-area" style={{ backgroundColor: '#000080', height: '24px', width: '100%', position: 'relative' }}>
-            <span style={{ color: '#fff', marginLeft: '5px', fontSize: '12px', lineHeight: '24px', fontFamily: 'DinkieBitmap, sans-serif' }}>Notepad</span>
-            <button 
-              className="cancel"
-              style={{ position: 'absolute', right: '2px', top: '2px', width: '20px', height: '20px', backgroundColor: '#dfdfdf', border: '1px solid #fff', borderBottomColor: '#000', borderRightColor: '#000', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}
-              onClick={() => { playCloseSound(); closeWindow('notepad'); }}
-              onTouchEnd={(e) => { e.stopPropagation(); playCloseSound(); closeWindow('notepad'); }}
-            >
-              X
-            </button>
-          </div>
+          <img src="/assets/images/border/window-jinebig.png" alt="bg" style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: -1, pointerEvents: 'none', objectFit: 'fill' }} />
+          <div className="window-drag-area" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '24px', cursor: 'pointer' }}></div>
           
-          <div className="window-content" style={{ height: 'calc(100% - 24px)', boxSizing: 'border-box' }}>
+          {/* Title */}
+          <div style={{ position: 'absolute', top: '4px', left: '10px', color: '#fff', fontSize: '12px', fontFamily: 'DinkieBitmap, sans-serif' }}>Notepad</div>
+          <button 
+            style={{ position: 'absolute', top: '4px', right: '6px', width: '16px', height: '16px', background: 'transparent', border: 'none', cursor: 'pointer' }} 
+            onClick={() => closeWindow('notepad')}
+            onTouchEnd={(e) => { e.stopPropagation(); playCloseSound(); closeWindow('notepad'); }}
+          ></button>
+          
+          {/* Content Area */}
+          <div style={{ position: 'absolute', top: '30px', left: '8px', right: '8px', bottom: '8px', backgroundColor: '#dfdfdf', overflow: 'hidden', padding: '0px' }}>
             <NotepadApp />
           </div>
         </Rnd>
