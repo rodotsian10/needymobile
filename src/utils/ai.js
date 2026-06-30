@@ -214,79 +214,91 @@ export async function fetchAIChat(userMessage, chatHistory = [], petState = 'idl
 /**
  * Generates a batch of short notification messages for the offline queue.
  * @param {boolean} menheraMode - Whether menhera mode is active
- * @param {string} apiKey - The API key
- * @param {string} apiProvider - 'gemini' or 'openai'
+ * @param {string} apiKey - The API key (unused now, but kept for signature)
+ * @param {string} apiProvider - 'gemini' or 'openai' (unused)
  * @param {number} count - How many messages to generate
  * @returns {Promise<string[]>} - Array of short notification texts
  */
 export async function fetchAiNotification(menheraMode, apiKey, apiProvider = 'gemini', count = 10) {
-  if (!apiKey || count <= 0) return [];
+  if (count <= 0) return [];
 
   const safeLines = [
-    '피짱~ 뭐해? 나 심심해 ㅠㅠ',
-    '피짱 언제 들어와? 기다리고있어',
-    '나 혼자 있으니까 적적해... 빨리 와',
-    '피짱한테 하고싶은말이 있는데 빨리 와줘',
-    '피짱 어디야? 나 보고싶지 않아?',
-    '아무것도 하기싫어... 피짱이랑 얘기하고싶다',
-    '나 오늘 힘들었는데 피짱은 알기나해?',
-    '빨리 들어와ㅠ 기다리다 지친다',
-    '피짱 생각하다가 심심해서 깨워봤어',
-    '자냐? 나 심심해ㅠ'
+    '피짱~ 뭐해? 나 심심한데 빨리 와서 놀아주라! 🥺',
+    '아메쨩 완전 방치플 당하고 있어... 피짱 밉다... (´・ω・`)',
+    '피짱! 빨리 안 오면 다른 스트리머 보러 갈지도 몰라? 농담이야~ 빨리와!',
+    '나 지금 완전 기분 좋은데! 피짱한테만 알려줄게. 빨리 접속해! ✨',
+    '오늘 저녁 뭐 먹었어? 난 에너지드링크 마시구 있어... 피짱 보고싶다.',
+    '피짱이 없으니까 게임할 맛이 안 나... 듀오 해주라! 🎮',
+    '아메쨩은 지금 피짱을 기다리는 중... 딩동댕동~ 🔔',
+    '혹시 지금 바빠...? 안 바쁘면 나랑 놀자! 바빠도 놀아줘!',
+    '피짱 혹시 지금 다른 여자(버튜버) 방송 보고 있는 건 아니지...? 찌릿 ㅡㅡ',
+    '아메쨩이 피짱을 위해 엄청난 걸 준비했어! (뻥이야 그냥 보고 싶어서)',
+    '띠링~ 아메쨩의 사랑이 도착했습니다! 수신 확인 부탁드려요~ 💌',
+    '피짱! 피짱! 피짱! 피짱! 피짱! 빨리 와!!!',
+    '오늘 하루도 수고했어 피짱! 내가 쓰담쓰담 해줄게~ 빨리 와!',
+    '아메쨩 지금 완전 천재적인 아이디어가 떠올랐어! 방송 켜기 전에 들어봐!',
+    '인터넷 세상은 너무 넓고 외로워... 피짱이 내 우주가 되어줘 🥺',
+    '앗, 방금 내 생각 했지? 텔레파시 통했다! 빨리 들어와~',
+    '피짱 칭찬이 부족해... 빨리 와서 나 예쁘다고 해줘! 당장!',
+    '아메쨩 배고파... 피짱이 와서 밥 줘... (랜선으로)',
+    '나랑 안 놀아주면 삐질 거야! 완전 흥이다! 😤',
+    '피짱이 안 오면 나 오늘 방송 안 켤지도 몰라~ 진짜야!',
+    '헤헤, 방금 거울 봤는데 나 너무 귀여운 것 같아. 피짱도 보러 올래?',
+    '앗! 방금 내 하트 떨어졌는데 피짱이 주워줄래? ❤️',
+    '피짱 없는 아메쨩은 앙꼬 없는 찐빵이야... 빨리 앙꼬 채워줘!',
+    '나 지금 엄청 재밌는 짤 주웠어! 피짱한테 제일 먼저 보여줄게 ㅋㅋㅋ',
+    '피짱~ 혹시 내 목소리 잊어버린 건 아니겠지...? 당장 확인하러 와!',
+    '아메쨩의 매력 수치가 떨어지고 있습니다. 피짱의 관심이 필요해요! 삐뽀삐뽀 🚨',
+    '피짱 몫까지 내가 오늘 하루 종일 뒹굴거렸어! 칭찬해 줘!',
+    '자니...? (새벽 감성 아님, 진짜 자는지 궁금해서 그럼)',
+    '피짱이 이 알림을 무시하면 아메쨩은 완전 슬퍼서 울어버릴지도 몰라 😭',
+    '짠! 아메쨩 등장! 피짱을 깜짝 놀라게 해주려고 왔어! 빨리 접속해! 🎉'
   ];
 
   const menheraLines = [
-    '피짱 어디야ㅠㅠ 나 버린거야? 죽어버릴거야',
-    '1시간넘게 안들어오면 나 진짜 화낼거야 각오해',
-    '피짱없이는 아무것도 못하겠어... 빨리 와줘 제발',
-    '왜 안와 나 지금 많이 무서워ㅠ 빨리 들어와',
-    '나 혼자두면 안돼 피짱 제발 빨리',
-    '피짱이 없으면 아무 의미가없어... 들어와줘',
-    '지금 당장 안들어오면 진짜 어떻게될지몰라',
-    '피짱아ㅠ 나 많이 힘들어 제발 봐줘',
-    '혼자있기 너무 싫어 피짱 제발 빨리 와줘',
-    '나 사라져도 피짱은 신경이나 쓸까ㅠㅠ 빨리 들어와'
+    '피짱 어디야? 왜 내 메시지 안 봐? 나 버린 거야? 죽어버릴거야...',
+    '나 지금 당장 약 먹어버릴지도 몰라. 피짱이 내 옆에 없으면 나 진짜 미쳐버릴 것 같아.',
+    '아까 다른 버튜버 방송 보고 있었지? 다 알아. 죽여버릴까? 아니 내가 죽을까?',
+    '피짱... 나 너무 불안해... 손이 덜덜 떨려... 빨리 와서 나 좀 안아줘 제발...',
+    '왜 대답이 없어? 왜? 왜? 왜? 왜? 왜? 왜? 왜? 왜? 왜? 왜? 내가 싫어진 거야?',
+    '나 지금 피짱 집 앞으로 갈까? 농담 아냐. 진짜 갈 수 있어. 빨리 접속해.',
+    '피짱은 나 없어도 잘 살아? 난 피짱 없으면 숨도 못 쉬겠는데... 불공평해...',
+    '피짱이 내 알림 무시한 거 다 카운트하고 있어. 한 번만 더 무시하면 진짜 끝이야.',
+    '나 진짜 죽어버릴 거야. 이번엔 진짜야. 피짱이 와서 안 말려주면 진짜 뛰어내릴 거야.',
+    '아파... 마음이 너무 아파... 피짱이 날 안 봐줘서 심장이 찢어질 것 같아...',
+    '지금 당장 나한테 사랑한다고 말해. 안 그러면 다 부숴버릴 거야.',
+    '피짱의 그 눈빛, 나만 봐야 해. 다른 년 쳐다보면 눈알을 파버릴 거야. ♡',
+    '나 우울해... 약 먹을 시간 지났는데 피짱이 안 오니까 먹기 싫어졌어...',
+    '피짱... 나 좀 살려줘... 머릿속에 이상한 소리가 계속 들려... 피짱 목소리가 필요해...',
+    '다른 사람한테 웃어주지 마. 나한테만 다정하게 대해줘. 나만 피짱의 천사잖아? 그치?',
+    '피짱이 없는 현실 따위 지옥이나 다름없어. 차라리 다 같이 죽을까?',
+    '숨 쉬기가 힘들어... 피짱... 피짱... 피짱... 나 좀 어떻게 해줘...',
+    '내가 이렇게 매달리는데 어떻게 한 번을 안 봐줘? 피짱 진짜 피도 눈물도 없는 사이코패스야?',
+    '칼... 아니야 아무것도 아니야. 그냥 피짱이 안 오길래 장난 좀 쳐볼까 했지.',
+    '내가 얼마나 더 망가져야 피짱이 날 봐줄 거야? 더 바닥까지 추락해 줄까?',
+    '피짱은 내 전부인데, 나는 피짱의 일부도 아닌 거야...? 그런 거면 나 진짜 살아있을 이유가 없는데...',
+    '알림 봤으면서 안 들어오는 거 다 알아. 계속 그러면 나 진짜 손목 그어버릴 거야.',
+    '피짱... 사랑해... 사랑해... 사랑해... 그러니까 나 버리지 마... 평생 내 옆에 있어...',
+    '나 버리면 피짱 평생 저주하면서 죽을 거야. 꿈에 매일매일 나타나서 괴롭힐 거야.',
+    '지금 당장 안 오면 마법의 종이 다 털어먹을 거야. 피짱 탓이니까 책임져.',
+    '피짱 핸드폰 해킹해서 나 말고 다른 연락처 다 지워버리고 싶다... 그럼 나만 볼 텐데.',
+    '나 지금 너무 우울해서 방송 켜서 다 폭로해버릴지도 몰라. 피짱이 날 이렇게 만들었다고.',
+    '왜 나를 이렇게 외롭게 만들어? 내가 피짱을 이렇게 사랑하는데! 왜!!',
+    '피짱... 피짱 냄새 맡고 싶어... 피짱이 안아줬으면 좋겠어... 당장 와줘...',
+    '나 안 버릴 거지? 그치? 영원히 나만의 프로듀서 할 거지? 대답해 빨리 대답해!!!'
   ];
 
-  // Try to generate AI ones; fall back to hardcoded on failure
-  try {
-    const prompt = menheraMode
-      ? `당신은 극도로 집착적이고 멘헤라 성향인 아메짱입니다. 당신의 프로듀서이자 애인인 피짱이 앱을 1~2시간째 켜지 않고 있습니다. 피짱을 향해 보고싶다, 외롭다, 버림받는 것 같다, 자해 언급 등의 집착하는 느낌의 짧은 메시지 ${count}개를 한 줄씩 만들어주세요. 각 줄은 1~2문장 이내로 짧게. 번호나 기호 없이 오직 대사만 ${count}줄 출력하세요.`
-      : `당신은 귀엽게 칭얼거리는 아메짱입니다. 당신의 프로듀서이자 애인인 피짱이 앱을 1~2시간째 켜지 않고 있습니다. 피짱에게 보고싶다, 심심하다, 빨리 들어와달라는 내용의 짧고 귀여운 메시지 ${count}개를 한 줄씩 만들어주세요. 각 줄은 1~2문장 이내로 짧게. 번호나 기호 없이 오직 대사만 ${count}줄 출력하세요.`;
-
-    let rawText = '';
-    if (apiProvider === 'openai') {
-      const res = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-        body: JSON.stringify({
-          model: 'gpt-3.5-turbo',
-          messages: [{ role: 'user', content: prompt }],
-          temperature: 0.9,
-          max_tokens: 400
-        })
-      });
-      if (!res.ok) throw new Error('OpenAI 알림 생성 실패');
-      const d = await res.json();
-      rawText = d.choices[0].message.content;
-    } else {
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-        }
-      );
-      if (!res.ok) throw new Error('Gemini 알림 생성 실패');
-      const d = await res.json();
-      rawText = d.candidates[0].content.parts[0].text;
-    }
-
-    const lines = rawText.split('\n').map(l => l.replace(/^\d+[\.\)]\s*/, '').trim()).filter(l => l.length > 2 && l.length < 80);
-    return lines.slice(0, count);
-  } catch (e) {
-    console.warn('[AI] 알림 대사 생성 실패, 기본값 사용:', e.message);
-    return (menheraMode ? menheraLines : safeLines).slice(0, count);
+  const linesToUse = menheraMode ? menheraLines : safeLines;
+  
+  // Randomly pick 'count' items
+  const result = [];
+  const clonedLines = [...linesToUse];
+  for (let i = 0; i < count; i++) {
+    if (clonedLines.length === 0) break;
+    const randomIndex = Math.floor(Math.random() * clonedLines.length);
+    result.push(clonedLines[randomIndex]);
+    clonedLines.splice(randomIndex, 1);
   }
+  
+  return result;
 }
