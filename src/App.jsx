@@ -372,7 +372,7 @@ export default function App() {
   }, [settings.menheraMode]);
 
   const handleSend = async () => {
-    if (!input.trim() || isAiTyping || isCooldown) return;
+    if (!input.trim() || isAiResponding || isCooldown) return;
     const userMsg = input.trim();
     addJineMessage({ id: Date.now(), text: userMsg, sender: 'user' });
     setInput('');
@@ -383,7 +383,7 @@ export default function App() {
     setIsCooldown(true);
     setTimeout(() => {
       setIsCooldown(false);
-    }, 4000);
+    }, 6000);
     
     try {
       const { fetchAIChat } = await import('./utils/ai');
