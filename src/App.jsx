@@ -11,12 +11,13 @@ import { playOpenSound, playCloseSound, playExecuteSound, playJineSendSound, pla
 const BootScreen = () => {
   const { finishBoot } = useAppStore();
   const [text, setText] = useState('');
+  const audioRef = useRef(null);
   const audioPlayedRef = useRef(false);
   
   useEffect(() => {
     if (!audioPlayedRef.current) {
-      const audio = new Audio('/assets/audio/boot.wav');
-      audio.play().catch(() => {});
+      audioRef.current = new Audio('/assets/audio/boot.wav');
+      audioRef.current.play().catch(() => {});
       audioPlayedRef.current = true;
     }
 
@@ -39,7 +40,12 @@ const BootScreen = () => {
       }
     }, 600);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
   }, [finishBoot]);
 
   return (
