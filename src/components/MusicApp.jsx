@@ -43,15 +43,14 @@ export default function MusicApp() {
     }
   }, [volume]);
 
-  // Handle play/pause logic when track changes or play state toggles
+  // Sync external state only, do not play() here for mobile compatibility
   useEffect(() => {
     if (!audioRef.current) return;
-    if (isPlaying) {
-      audioRef.current.play().catch(e => console.warn('오디오 재생 실패:', e));
-    } else {
+    if (!isPlaying) {
       audioRef.current.pause();
     }
-  }, [isPlaying, currentTrackIndex]);
+    // If it is playing, the play() call was already made in the click handler
+  }, [isPlaying]);
 
   if (!isOpen) {
     // When closed, stop playback
@@ -60,7 +59,18 @@ export default function MusicApp() {
   }
 
   const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
+    if (!isPlaying) {
+      setIsPlaying(true);
+      if (audioRef.current) {
+        audioRef.current.play().catch(e => {
+          console.warn('오디오 재생 실패:', e);
+          setIsPlaying(false);
+        });
+      }
+    } else {
+      setIsPlaying(false);
+      if (audioRef.current) audioRef.current.pause();
+    }
   };
 
   const handleStop = () => {
@@ -74,6 +84,11 @@ export default function MusicApp() {
   const handleNext = () => {
     setCurrentTrackIndex((prev) => (prev + 1) % PLAYLIST.length);
     setIsPlaying(true);
+    // Play immediately after state update is queued. The audio src won't update until next render,
+    // so we set a tiny timeout to ensure it plays the NEW track synchronously enough for some browsers,
+    // or better, we wait for loadedmetadata or use a separate effect that is triggered by a ref.
+    // Actually, setting play() here might play the OLD track if src hasn't updated. 
+    // To fix, we can just let onLoadedData or onCanPlay play it if isPlaying is true.
   };
 
   const handlePrev = () => {
@@ -194,7 +209,16 @@ export default function MusicApp() {
         src={`/assets/audio/${PLAYLIST[currentTrackIndex].file}`}
         onEnded={handleTrackEnded}
         onTimeUpdate={(e) => setCurrentTime(e.target.currentTime)}
-        onLoadedMetadata={(e) => setDuration(e.target.duration)}
+        onLoadedMetadata={(e) => {
+          setDuration(e.target.duration);
+          if (isPlaying) {
+            e.target.play().catch(err => {
+              console.warn('트랙 전환 시 오디오 재생 실패:', err);
+              setIsPlaying(false);
+            });
+          }
+        }}
+        preload="metadata"
       />
     </Rnd>
   );
