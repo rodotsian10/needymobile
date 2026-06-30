@@ -77,88 +77,91 @@ export default function MusicApp() {
 
   return (
     <Rnd
-      default={{ x: 100, y: 100, width: 300, height: 350 }}
-      minWidth={300}
-      minHeight={250}
+      default={{ x: 100, y: 100, width: 340, height: 160 }}
+      minWidth={340}
+      minHeight={160}
       bounds="parent"
       style={{ zIndex, display: 'flex', flexDirection: 'column' }}
       className="os-window"
       onMouseDown={() => focusWindow('music')}
       dragHandleClassName="title-bar"
     >
-      {/* Title Bar */}
-      <div className="title-bar" style={{ backgroundColor: '#000080', display: 'flex', alignItems: 'center', padding: '2px 3px' }}>
-        <img src="/assets/images/icons/media.png" alt="icon" style={{ width: '16px', height: '16px', marginRight: '4px' }} />
-        <span style={{ color: '#fff', fontSize: '12px', fontFamily: 'DinkieBitmap, sans-serif' }}>Media Player</span>
-        <button
-          onClick={() => closeWindow('music')}
-          style={{
-            marginLeft: 'auto', width: '16px', height: '16px',
-            backgroundColor: '#dfdfdf', border: '1px solid #fff',
-            borderBottomColor: '#000', borderRightColor: '#000',
-            fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-            padding: 0
-          }}
-        >
-          X
-        </button>
-      </div>
-
-      {/* Main Content */}
-      <div className="window-content" style={{ flex: 1, backgroundColor: '#dfdfdf', padding: '10px', display: 'flex', flexDirection: 'column', gap: '10px', border: '2px solid #dfdfdf', borderTopColor: '#fff', borderLeftColor: '#fff', borderRightColor: '#000', borderBottomColor: '#000' }}>
+      <div style={{ backgroundColor: '#4df9df', padding: '2px', height: '100%', boxSizing: 'border-box', border: '2px solid #000080', display: 'flex', flexDirection: 'column' }}>
         
-        {/* LCD Screen */}
-        <div style={{ backgroundColor: '#000', color: '#0f0', padding: '10px', border: '2px inset #dfdfdf', fontFamily: 'PixelMplus10', textAlign: 'center', textShadow: '0 0 5px #0f0' }}>
-          <div style={{ fontSize: '12px', marginBottom: '5px' }}>{isPlaying ? '▶ PLAYING' : '⏸ PAUSED'}</div>
-          <div style={{ fontSize: '16px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {PLAYLIST[currentTrackIndex].title}
+        {/* Title Bar */}
+        <div className="title-bar" style={{ backgroundColor: '#dfccff', display: 'flex', alignItems: 'center', padding: '2px 4px', border: '2px solid #000080', borderBottom: 'none' }}>
+          <div style={{ width: '12px', height: '12px', backgroundColor: '#5c22c7', marginRight: '6px' }}></div>
+          <span style={{ color: '#5c22c7', fontSize: '14px', fontFamily: 'DinkieBitmap, sans-serif', fontWeight: 'bold' }}>Media Player</span>
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: '2px' }}>
+            <button
+              style={{
+                width: '18px', height: '18px', backgroundColor: '#dfccff', border: '2px solid #5c22c7',
+                color: '#5c22c7', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0
+              }}
+            >
+              ⚙
+            </button>
+            <button
+              onClick={() => closeWindow('music')}
+              style={{
+                width: '18px', height: '18px', backgroundColor: '#dfccff', border: '2px solid #5c22c7',
+                color: '#5c22c7', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0
+              }}
+            >
+              X
+            </button>
           </div>
         </div>
 
-        {/* Controls */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '5px' }}>
-          <button className="media-btn" onClick={handlePrev} title="이전 곡">⏮</button>
-          <button className="media-btn" onClick={handlePlayPause} style={{ fontWeight: 'bold' }}>
-            {isPlaying ? '⏸' : '▶'}
-          </button>
-          <button className="media-btn" onClick={handleStop} title="정지">⏹</button>
-          <button className="media-btn" onClick={handleNext} title="다음 곡">⏭</button>
-        </div>
+        {/* Main Content Area */}
+        <div style={{ flex: 1, backgroundColor: '#fff', border: '2px solid #000080', display: 'flex', padding: '6px', gap: '10px' }}>
+          {/* Album Art Placeholder */}
+          <div style={{ width: '64px', height: '64px', backgroundColor: '#ccc', border: '1px solid #000080', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+            <img src="/assets/images/icons/media.png" alt="album" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.5 }} />
+          </div>
 
-        {/* Volume */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '12px', fontFamily: 'DinkieBitmap, sans-serif' }}>
-          <span>VOL</span>
-          <input 
-            type="range" 
-            min="0" 
-            max="100" 
-            value={volume}
-            onChange={(e) => setVolume(e.target.value)}
-            style={{ flex: 1 }}
-          />
-        </div>
-
-        {/* Playlist */}
-        <div style={{ flex: 1, backgroundColor: '#fff', border: '2px inset #dfdfdf', overflowY: 'auto' }}>
-          {PLAYLIST.map((track, idx) => (
-            <div 
-              key={track.id}
-              onClick={() => {
-                setCurrentTrackIndex(idx);
-                setIsPlaying(true);
-              }}
-              style={{
-                padding: '5px',
-                fontSize: '12px',
-                fontFamily: 'PixelMplus10',
-                cursor: 'pointer',
-                backgroundColor: currentTrackIndex === idx ? '#000080' : 'transparent',
-                color: currentTrackIndex === idx ? '#fff' : '#000'
-              }}
-            >
-              {idx + 1}. {track.title}
+          {/* Track Info & Controls */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <div style={{ color: '#5c22c7', fontFamily: 'PixelMplus10', fontSize: '16px', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {PLAYLIST[currentTrackIndex].title}
             </div>
-          ))}
+            <div style={{ color: '#5c22c7', fontFamily: 'PixelMplus10', fontSize: '12px', marginBottom: '8px' }}>
+              Needy Streamer Overload
+            </div>
+            
+            {/* Controls */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button 
+                onClick={handlePrev}
+                style={{ background: 'none', border: 'none', color: '#5c22c7', fontSize: '24px', cursor: 'pointer', padding: 0, lineHeight: 1 }}
+              >
+                ⏮
+              </button>
+              <button 
+                onClick={handlePlayPause}
+                style={{ background: 'none', border: 'none', color: '#5c22c7', fontSize: '24px', cursor: 'pointer', padding: 0, lineHeight: 1 }}
+              >
+                {isPlaying ? '⏸' : '▶'}
+              </button>
+              <button 
+                onClick={handleNext}
+                style={{ background: 'none', border: 'none', color: '#5c22c7', fontSize: '24px', cursor: 'pointer', padding: 0, lineHeight: 1 }}
+              >
+                ⏭
+              </button>
+              <div style={{ marginLeft: 'auto', color: '#5c22c7', fontSize: '12px', fontFamily: 'PixelMplus10' }}>
+                / 3:32
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Progress Bar */}
+        <div style={{ height: '12px', backgroundColor: '#4df9df', display: 'flex', alignItems: 'center', gap: '2px', marginTop: '2px' }}>
+          <div style={{ width: '25%', height: '8px', backgroundColor: '#ff88dd', border: '1px solid #5c22c7' }}></div>
+          <div style={{ width: '8px', height: '8px', backgroundColor: '#5c22c7', borderRadius: '50%' }}></div>
+          <div style={{ width: '8px', height: '8px', backgroundColor: '#5c22c7', borderRadius: '50%' }}></div>
+          <div style={{ width: '8px', height: '8px', backgroundColor: '#5c22c7', borderRadius: '50%' }}></div>
         </div>
 
       </div>
