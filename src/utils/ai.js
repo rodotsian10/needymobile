@@ -31,12 +31,20 @@ export async function fetchAIChat(userMessage, chatHistory = [], petState = 'idl
     throw new Error('API Key가 없습니다. 설정 창에서 API Key를 입력해주세요.');
   }
 
-  // Determine Persona
-  const systemInstruction = (petState === 'kangel' || petState === 'streaming') ? KANGEL_PROMPT : AME_PROMPT;
+  // Determine Persona and Inject Real-time Context
+  const now = new Date();
+  const timeContext = `\n\n[현재 시스템 시간 정보: ${now.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })}] 
+이 시간 정보를 바탕으로 아침인사, 점심, 저녁, 심야 등에 맞게 자연스럽게 대화하세요.`;
+
+  const basePrompt = (petState === 'kangel' || petState === 'streaming') ? KANGEL_PROMPT : AME_PROMPT;
+  const systemInstruction = basePrompt + timeContext;
+
+  // Limit conversation history to the last 50 messages to prevent token bloat and context confusion
+  const recentHistory = chatHistory.slice(-50);
 
   if (apiProvider === 'openai') {
     // OpenAI API Format
-    const formattedHistory = chatHistory.map(msg => ({
+    const formattedHistory = recentHistory.map(msg => ({
       role: msg.sender === 'user' ? 'user' : 'assistant',
       content: msg.text
     }));
@@ -72,7 +80,7 @@ export async function fetchAIChat(userMessage, chatHistory = [], petState = 'idl
 
   } else {
     // Gemini API Format
-    const formattedHistory = chatHistory.map(msg => ({
+    const formattedHistory = recentHistory.map(msg => ({
       role: msg.sender === 'user' ? 'user' : 'model',
       parts: [{ text: msg.text }]
     }));
