@@ -23,6 +23,7 @@ const useAppStore = create(
         windowScale: 100,
         apiKey: '',
         apiProvider: 'gemini',
+        menheraMode: false,
       },
       
       // Notepad State

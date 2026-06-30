@@ -60,6 +60,18 @@ export default function SettingsApp() {
             <option value="desire.wav">Desire (인터넷 엔젤)</option>
           </select>
         </div>
+        
+        {/* Menhera Mode Toggle */}
+        <div className="setting-item" style={{ border: '2px solid #ff4488', backgroundColor: '#ffddf0' }}>
+          <span style={{ color: '#ff0066', fontWeight: 'bold' }}>멘헤라 모드 (주의)</span>
+          <button 
+            className={`toggle-btn ${settings.menheraMode ? 'on' : 'off'}`}
+            onClick={() => handleToggle('menheraMode')}
+            style={settings.menheraMode ? { backgroundColor: '#ff0066', color: 'white' } : {}}
+          >
+            {settings.menheraMode ? 'ON' : 'OFF'}
+          </button>
+        </div>
 
         {/* AI Provider & API Key */}
         <div className="setting-item col">
