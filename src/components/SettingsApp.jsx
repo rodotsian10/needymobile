@@ -119,30 +119,36 @@ export default function SettingsApp() {
           </button>
         </div>
 
-        {/* API Key Input */}
-        <div className="setting-item col">
-          <span>JINE API Key (OpenAI)</span>
-          <input 
-            type="password" 
-            placeholder="sk-..." 
-            className="setting-input"
-          />
-        </div>
+
 
       </div>
 
       {showAlert && (
         <div style={{
-          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999
         }}>
-          <div style={{
-            backgroundColor: '#000', color: '#fff', border: '2px solid #ff00ff', padding: '20px', 
-            display: 'flex', flexDirection: 'column', alignItems: 'center', fontFamily: 'DinkieBitmap'
-          }}>
-            <img src="/assets/images/task_manager/icon_status_yami.png" alt="Saved" style={{ width: '32px', marginBottom: '10px' }} />
-            <span style={{ fontSize: '14px' }}>저장되었습니다!</span>
-            <span style={{ fontSize: '10px', color: '#aaa', marginTop: '5px' }}>피짱.. 잊지마!</span>
+          <div className="os-window" style={{ width: '250px', backgroundColor: '#dfdfdf', border: '2px solid #dfdfdf', borderTopColor: '#fff', borderLeftColor: '#fff', borderRightColor: '#000', borderBottomColor: '#000', padding: '2px' }}>
+            <div style={{ backgroundColor: '#000080', height: '20px', width: '100%', display: 'flex', alignItems: 'center', paddingLeft: '5px' }}>
+              <span style={{ color: '#fff', fontSize: '12px', fontFamily: 'DinkieBitmap, sans-serif' }}>Information</span>
+              <button 
+                style={{ marginLeft: 'auto', marginRight: '2px', width: '16px', height: '16px', backgroundColor: '#dfdfdf', border: '1px solid #fff', borderBottomColor: '#000', borderRightColor: '#000', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                onClick={() => setShowAlert(false)}
+              >X</button>
+            </div>
+            <div style={{ padding: '15px 10px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <img src="/assets/images/task_manager/icon_status_yami.png" alt="Saved" style={{ width: '32px', height: '32px' }} />
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: '14px', fontFamily: 'PixelMplus10', color: '#000' }}>저장되었습니다!</span>
+                <span style={{ fontSize: '12px', color: '#666', marginTop: '5px', fontFamily: 'PixelMplus10' }}>피짱.. 잊지마!</span>
+              </div>
+            </div>
+            <div style={{ padding: '10px', display: 'flex', justifyContent: 'center' }}>
+              <button 
+                onClick={() => setShowAlert(false)}
+                style={{ width: '60px', height: '24px', fontFamily: 'PixelMplus10', backgroundColor: '#dfdfdf', border: '1px solid #fff', borderBottomColor: '#000', borderRightColor: '#000', cursor: 'pointer' }}
+              >OK</button>
+            </div>
           </div>
         </div>
       )}
