@@ -11,7 +11,7 @@ const PLAYLIST = [
 ];
 
 export default function MusicApp() {
-  const { windows, closeWindow, focusWindow, updateSettings } = useAppStore();
+  const { windows, closeWindow, focusWindow, updateSettings, setIsMusicPlaying } = useAppStore();
   const isOpen = windows.music?.isOpen;
   const zIndex = windows.music?.zIndex;
 
@@ -29,12 +29,13 @@ export default function MusicApp() {
     return `${m}:${s}`;
   };
 
-  // Stop global BGM when music app plays something
+  // Stop global BGM and sync music state when music app plays something
   useEffect(() => {
     if (isPlaying) {
       updateSettings({ bgmEnabled: false });
     }
-  }, [isPlaying, updateSettings]);
+    setIsMusicPlaying(isPlaying);
+  }, [isPlaying, updateSettings, setIsMusicPlaying]);
 
   useEffect(() => {
     if (audioRef.current) {

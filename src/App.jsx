@@ -51,7 +51,8 @@ export default function App() {
     openWindow, closeWindow, focusWindow,
     jineMessages, addJineMessage,
     notificationQueue, addNotifications, popNotification,
-    petState, petAction, setPetState, setPetAction, settings, updateSettings } = useAppStore();
+    petState, petAction, setPetState, setPetAction, settings, updateSettings,
+    isMusicPlaying } = useAppStore();
 
   const swRef = useRef(null);
 
@@ -62,27 +63,52 @@ export default function App() {
   const prevJineActionRef = useRef(null);
   const jineChatRef = useRef(null);
 
-  const handleJineTyping = () => {
-    if (!settings.autoMotionEnabled) return;
-    if (petState !== 'kangel') return;
-    
-    // Save previous action if we are just starting to type
-    if (!jineTypingTimeout && petAction !== 'stream/56/0') {
-      prevJineActionRef.current = petAction;
+  // Maps emotion string from AI to petAction path
+  const getEmotionAction = (emotion) => {
+    const menheraMode = settings.menheraMode;
+    if (!emotion) return null;
+    if (menheraMode) {
+      // 멘헤라 모드: 행복→평온(호감도 최고), 불안→불안(죽은 눈), 짜증→짜증(죽은 눈), 역거움→구토
+      const map = { '행복': '0/2/0/0', '불안': '1/0/2/0', '짜증': '1/0/2/1', '역거움': '1/-1/-1/1' };
+      return map[emotion] || null;
+    } else {
+      // 일반 모드: 웃음→기분좋음(호감도 보통), 불안→불안(호감도 보통), 호감→평온(호감도 보통), 우울→짜증(화냄)
+      const map = { '웃음': '0/1/0/1', '불안': '1/1/0/0', '호감': '0/1/0/0', '우울': '1/0/0/1' };
+      return map[emotion] || null;
     }
+  };
 
-    if (jineTypingTimeout) clearTimeout(jineTypingTimeout);
-    
+  // AI response motion: show emotion, then revert to base or music motion after 4s
+  const triggerAmeEmotionMotion = (emotion) => {
+    if (!settings.autoMotionEnabled || petState !== 'idle') return;
+    const action = getEmotionAction(emotion);
+    if (!action) return;
+    setPetAction(action);
+    setTimeout(() => {
+      // Revert to headphone if music is still playing, else base
+      if (isMusicPlaying) {
+        setPetAction('-1/-1/-1/0');
+      } else {
+        setPetAction('0/0/0/0');
+      }
+    }, 4000);
+  };
+
+  // Kangel AI response motion: show phone typing, then revert after 3s
+  const triggerKangelChatMotion = () => {
+    if (!settings.autoMotionEnabled || petState !== 'kangel') return;
+    prevJineActionRef.current = prevJineActionRef.current || petAction;
     setPetAction('stream/56/0');
-    
+    if (jineTypingTimeout) clearTimeout(jineTypingTimeout);
     const timeout = setTimeout(() => {
       setJineTypingTimeout(null);
-      if (prevJineActionRef.current) {
-        setPetAction(prevJineActionRef.current);
+      if (isMusicPlaying) {
+        setPetAction('stream/7/0'); // ASMR when music playing
       } else {
-        setPetAction('stream/0/0');
+        setPetAction(prevJineActionRef.current || 'stream/0/0');
+        prevJineActionRef.current = null;
       }
-    }, 2000);
+    }, 3000);
     setJineTypingTimeout(timeout);
   };
 
@@ -204,6 +230,28 @@ export default function App() {
     document.documentElement.style.setProperty('--window-scale', (settings.windowScale || 100) / 100);
   }, [settings.windowScale]);
 
+  // Music listening motion: headphone for Ame, ASMR for Kangel
+  useEffect(() => {
+    if (!settings.autoMotionEnabled) return;
+    const isTypingActive = jineTypingTimeout !== null;
+    if (isTypingActive) return; // Chat motion takes priority
+
+    if (isMusicPlaying) {
+      if (petState === 'idle') {
+        setPetAction('-1/-1/-1/0'); // Headphone (music)
+      } else if (petState === 'kangel') {
+        setPetAction('stream/7/0'); // ASMR (whisper)
+      }
+    } else {
+      // Music stopped - revert to base
+      if (petState === 'idle') {
+        setPetAction('0/0/0/0');
+      } else if (petState === 'kangel') {
+        setPetAction('stream/0/0');
+      }
+    }
+  }, [isMusicPlaying]);
+
   useEffect(() => {
     if (jineChatRef.current) {
       jineChatRef.current.scrollTop = jineChatRef.current.scrollHeight;
@@ -311,25 +359,30 @@ export default function App() {
     
     try {
       const { fetchAIChat } = await import('./utils/ai');
-      const response = await fetchAIChat(userMsg, jineMessages, petState);
+      const { text: response, emotion } = await fetchAIChat(userMsg, jineMessages, petState);
+      
+      // Trigger motion when AI starts responding
+      if (petState === 'idle') {
+        triggerAmeEmotionMotion(emotion);
+      } else if (petState === 'kangel') {
+        triggerKangelChatMotion();
+      }
       
       const lines = response.split('\n').map(line => line.trim()).filter(line => line.length > 0);
       
       for (let i = 0; i < lines.length; i++) {
         setIsAiTyping(true);
-        // Delay between 500ms and 1500ms based on length for realism, skip delay for the first message if needed, but let's just wait for all.
         const delay = Math.min(2000, 500 + lines[i].length * 50);
         if (i > 0) {
           await new Promise(r => setTimeout(r, delay));
         } else {
-          await new Promise(r => setTimeout(r, 500)); // Initial short delay
+          await new Promise(r => setTimeout(r, 500));
         }
         
         setIsAiTyping(false);
         const audio = new Audio('/assets/audio/jine_send_stamp.wav');
         audio.play().catch(()=>{});
         addJineMessage({ id: Date.now() + Math.random(), text: lines[i], sender: 'ame' });
-        // Slight pause before starting to type the next one
         if (i < lines.length - 1) {
           await new Promise(r => setTimeout(r, 300));
         }

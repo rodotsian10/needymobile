@@ -123,7 +123,11 @@ const useAppStore = create(
                    state === 'transforming_dark' ? 'transformation_dark' : 'transformation',
         theme: state === 'kangel' ? 'dark' : 'normal'
       }),
-      setPetAction: (action) => set({ petAction: action })
+      setPetAction: (action) => set({ petAction: action }),
+
+      // Music playing state (so App can apply headphone motion)
+      isMusicPlaying: false,
+      setIsMusicPlaying: (val) => set({ isMusicPlaying: val }),
     }),
     {
       name: 'dose-os-storage',
