@@ -86,6 +86,7 @@ export default function MusicApp() {
 
   return (
     <Rnd
+      scale={0.7}
       default={{ x: 100, y: 100, width: 340, height: 180 }}
       minWidth={340}
       minHeight={180}

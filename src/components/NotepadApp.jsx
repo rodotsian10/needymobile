@@ -80,10 +80,10 @@ export default function NotepadApp() {
   };
 
   return (
-    <div style={{ display: 'flex', height: '100%', backgroundColor: '#fff' }}>
+    <div style={{ display: 'flex', height: '100%', backgroundColor: '#dfdfdf', padding: '2px', boxSizing: 'border-box' }}>
       
       {/* Sidebar - Note List */}
-      <div style={{ width: '120px', borderRight: '2px solid #dfdfdf', backgroundColor: '#f0f0f0', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ width: '120px', border: '2px inset #dfdfdf', backgroundColor: '#dfdfdf', display: 'flex', flexDirection: 'column', marginRight: '4px' }}>
         <button 
           onClick={handleCreateNote}
           className="retro-btn"
@@ -91,14 +91,14 @@ export default function NotepadApp() {
         >
           + 새 메모
         </button>
-        <div style={{ overflowY: 'auto', flex: 1, borderTop: '1px solid #999' }}>
+        <div style={{ overflowY: 'auto', flex: 1, borderTop: '2px solid #000', borderLeft: '2px solid #000', borderRight: '2px solid #fff', borderBottom: '2px solid #fff', backgroundColor: '#fff' }}>
           {safeNotes.map(note => (
             <div 
               key={note.id}
               onClick={() => { playOpenSound(); setCurrentNote(note.id); setIsEditing(false); }}
               style={{
                 padding: '8px 5px',
-                borderBottom: '1px solid #ccc',
+                borderBottom: '1px solid #dfdfdf',
                 backgroundColor: currentNoteId === note.id ? '#000080' : 'transparent',
                 color: currentNoteId === note.id ? '#fff' : '#000',
                 cursor: 'pointer',
@@ -112,18 +112,18 @@ export default function NotepadApp() {
             </div>
           ))}
           {safeNotes.length === 0 && (
-            <div style={{ padding: '10px', fontSize: '11px', color: '#666', textAlign: 'center' }}>메모가 없습니다</div>
+            <div style={{ padding: '10px', fontSize: '11px', color: '#000', textAlign: 'center', fontFamily: 'PixelMplus10, sans-serif' }}>메모가 없습니다</div>
           )}
         </div>
       </div>
 
       {/* Main Area */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', border: '2px solid #dfdfdf', borderTopColor: '#000', borderLeftColor: '#000', borderRightColor: '#fff', borderBottomColor: '#fff', backgroundColor: '#fff' }}>
         
         {currentNoteId ? (
           <>
             {/* Toolbar */}
-            <div style={{ display: 'flex', borderBottom: '1px solid #999', backgroundColor: '#dfdfdf', padding: '5px', gap: '5px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', borderBottom: '2px solid #dfdfdf', backgroundColor: '#dfdfdf', padding: '4px', gap: '4px', alignItems: 'center' }}>
               <button className="retro-btn" style={{ padding: '2px 8px', color: '#000' }} onClick={() => { playExecuteSound(); setIsEditing(!isEditing); }}>
                 {isEditing ? '👁️ 보기 (View)' : '✏️ 편집 (Edit)'}
               </button>
@@ -147,8 +147,8 @@ export default function NotepadApp() {
                     onChange={(e) => { setLocalTitle(e.target.value); handleTyping(); }}
                     placeholder="제목을 입력하세요"
                     style={{
-                      width: '100%', border: '1px solid #999', padding: '5px', 
-                      marginBottom: '10px', fontFamily: 'PixelMplus10, sans-serif', fontSize: '16px', boxSizing: 'border-box'
+                      width: '100%', border: '2px solid #dfdfdf', borderTopColor: '#000', borderLeftColor: '#000', borderRightColor: '#fff', borderBottomColor: '#fff', padding: '5px', 
+                      marginBottom: '10px', fontFamily: 'PixelMplus10, sans-serif', fontSize: '16px', boxSizing: 'border-box', backgroundColor: '#fff'
                     }}
                   />
                   <textarea
@@ -157,9 +157,9 @@ export default function NotepadApp() {
                     placeholder="마크다운 문법으로 메모를 작성하세요..."
                     spellCheck="false"
                     style={{
-                      flex: 1, width: '100%', border: '1px solid #999', padding: '10px',
+                      flex: 1, width: '100%', border: '2px solid #dfdfdf', borderTopColor: '#000', borderLeftColor: '#000', borderRightColor: '#fff', borderBottomColor: '#fff', padding: '10px',
                       outline: 'none', resize: 'none', fontFamily: 'PixelMplus10, sans-serif', 
-                      fontSize: '14px', boxSizing: 'border-box'
+                      fontSize: '14px', boxSizing: 'border-box', backgroundColor: '#fff'
                     }}
                   />
                 </>
@@ -168,7 +168,7 @@ export default function NotepadApp() {
                   flex: 1, overflowY: 'auto', padding: '0 10px', 
                   fontFamily: 'PixelMplus10, sans-serif', color: '#000' 
                 }}>
-                  <h1 style={{ marginTop: 0, borderBottom: '1px solid #eee', paddingBottom: '10px' }}>{currentNote.title}</h1>
+                  <h1 style={{ marginTop: '5px', borderBottom: '2px dashed #dfdfdf', paddingBottom: '10px' }}>{currentNote.title}</h1>
                   <div className="markdown-body">
                     <Markdown>{currentNote.content}</Markdown>
                   </div>
@@ -177,7 +177,7 @@ export default function NotepadApp() {
             </div>
           </>
         ) : (
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', flexDirection: 'column' }}>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', flexDirection: 'column', backgroundColor: '#dfdfdf' }}>
             <p>선택된 메모가 없습니다</p>
             <button className="retro-btn" onClick={handleCreateNote} style={{ color: '#000' }}>새 메모 만들기</button>
           </div>
