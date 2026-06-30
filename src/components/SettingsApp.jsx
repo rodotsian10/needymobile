@@ -195,6 +195,33 @@ export default function SettingsApp() {
             {notifCountdown !== null ? notifCountdown : 'TEST'}
           </button>
         </div>
+        
+        {/* Notification Permission Toggle */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#dfdfdf', padding: '6px' }}>
+          <span style={{ fontSize: '14px', fontWeight: 'bold' }}>Push 알림 수신 동의</span>
+          <button
+            className="retro-btn"
+            onClick={async () => {
+              if (Notification.permission === 'granted') {
+                alert('이미 알림 권한이 허용되어 있습니다.');
+              } else if (Notification.permission === 'denied') {
+                alert('브라우저 설정에서 알림 권한이 차단되어 있습니다. 설정에서 해제해주세요.');
+              } else {
+                const p = await Notification.requestPermission();
+                if (p === 'granted') alert('알림 권한이 허용되었습니다!');
+                else alert('알림 권한이 거부되었습니다.');
+              }
+            }}
+            style={{ minWidth: '48px', padding: '2px 8px', fontSize: '12px' }}
+          >
+            {Notification.permission === 'granted' ? '허용됨' : '허용하기'}
+          </button>
+        </div>
+
+        {/* Version Info */}
+        <div style={{ textAlign: 'center', marginTop: '10px', marginBottom: '5px', color: '#666', fontSize: '11px', fontFamily: 'PixelMplus10, sans-serif' }}>
+          Version beta 1.0.1
+        </div>
 
 
 

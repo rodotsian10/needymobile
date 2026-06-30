@@ -298,6 +298,32 @@ export default function App() {
     }
   }, [isBooting]);
 
+  // ── Mobile Keyboard Scroll Lock ──────────────────────────────────
+  useEffect(() => {
+    const preventScroll = () => {
+      if (window.scrollY > 0) {
+        window.scrollTo(0, 0);
+      }
+    };
+    window.addEventListener('scroll', preventScroll);
+    return () => window.removeEventListener('scroll', preventScroll);
+  }, []);
+
+  // ── Global interaction listener for Mobile BGM Autoplay ──────────
+  useEffect(() => {
+    const handleInteraction = () => {
+      if (bgmRef.current && bgmRef.current.paused && settings.bgmEnabled && !isBooting && petState !== 'transforming' && petState !== 'transforming_dark') {
+        bgmRef.current.play().catch(() => {});
+      }
+    };
+    window.addEventListener('click', handleInteraction, { once: true });
+    window.addEventListener('touchstart', handleInteraction, { once: true });
+    return () => {
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
+    };
+  }, [settings.bgmEnabled, isBooting, petState]);
+
   // ── BGM: pause when hidden, resume when visible ──────────────────
   useEffect(() => {
     const handleVisibility = () => {
