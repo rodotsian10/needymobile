@@ -132,7 +132,7 @@ export async function fetchAIChat(userMessage, chatHistory = [], petState = 'idl
       parts: [{ text: userMessage }]
     });
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
     const payload = {
       system_instruction: {
         parts: [{ text: systemInstruction }]
