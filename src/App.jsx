@@ -383,9 +383,6 @@ export default function App() {
     let poppedMsg = null;
 
     const handleAwayNotification = () => {
-      const sw = swRef.current;
-      if (!sw || !sw.active) return;
-
       if (document.hidden) {
         const queue = useAppStore.getState().notificationQueue;
         const fallback = settings.menheraMode
@@ -398,19 +395,47 @@ export default function App() {
 
         const delayMs = Math.floor(Math.random() * 60 * 60 * 1000) + 60 * 60 * 1000; // 1~2시간
 
-        sw.active.postMessage({
-          type: 'SCHEDULE_NOTIFICATION',
-          delayMs,
-          title: '아메쨩 💌',
-          body: msg,
-          tag: 'ame-away'
-        });
+        if (Capacitor.isNativePlatform()) {
+          import('@capacitor/local-notifications').then(({ LocalNotifications }) => {
+            LocalNotifications.schedule({
+              notifications: [
+                {
+                  title: '아메쨩 💌',
+                  body: msg,
+                  id: 999, // static ID for the away notification
+                  schedule: { at: new Date(Date.now() + delayMs) },
+                  smallIcon: 'ic_stat_icon_config_sample'
+                }
+              ]
+            });
+          });
+        } else {
+          const sw = swRef.current;
+          if (sw && sw.active) {
+            sw.active.postMessage({
+              type: 'SCHEDULE_NOTIFICATION',
+              delayMs,
+              title: '아메쨩 💌',
+              body: msg,
+              tag: 'ame-away'
+            });
+          }
+        }
       } else {
         // Cancel the scheduled notification because user came back early
-        sw.active.postMessage({
-          type: 'CANCEL_NOTIFICATION',
-          tag: 'ame-away'
-        });
+        if (Capacitor.isNativePlatform()) {
+          import('@capacitor/local-notifications').then(({ LocalNotifications }) => {
+            LocalNotifications.cancel({ notifications: [{ id: 999 }] });
+          });
+        } else {
+          const sw = swRef.current;
+          if (sw && sw.active) {
+            sw.active.postMessage({
+              type: 'CANCEL_NOTIFICATION',
+              tag: 'ame-away'
+            });
+          }
+        }
         
         // Put the message back into the queue
         if (poppedMsg) {

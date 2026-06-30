@@ -1,6 +1,6 @@
 import React from 'react';
 import useAppStore from '../store/useAppStore';
-import { PushNotifications } from '@capacitor/push-notifications';
+import { LocalNotifications } from '@capacitor/local-notifications';
 import { Capacitor } from '@capacitor/core';
 
 export default function SettingsApp() {
@@ -22,10 +22,23 @@ export default function SettingsApp() {
 
   const handleNotifTest = async () => {
     if (notifCountdown !== null) return; // already counting
-    const perm = await Notification.requestPermission();
-    if (perm !== 'granted') {
-      alert('알림 권한이 거부되었습니다.');
-      return;
+    
+    // Check permission
+    if (Capacitor.isNativePlatform()) {
+      const perm = await LocalNotifications.checkPermissions();
+      if (perm.display !== 'granted') {
+        const req = await LocalNotifications.requestPermissions();
+        if (req.display !== 'granted') {
+          alert('알림 권한이 거부되었습니다.');
+          return;
+        }
+      }
+    } else {
+      const perm = await Notification.requestPermission();
+      if (perm !== 'granted') {
+        alert('알림 권한이 거부되었습니다.');
+        return;
+      }
     }
 
     // Pick a notification message
@@ -37,7 +50,7 @@ export default function SettingsApp() {
     const msg = queue.length > 0 ? queue[0] : fallback;
     if (queue.length > 0) store.popNotification();
 
-    // Send to Service Worker for scheduling
+    // Countdown and schedule
     let count = 5;
     setNotifCountdown(count);
     const tick = setInterval(() => {
@@ -45,16 +58,31 @@ export default function SettingsApp() {
       if (count <= 0) {
         clearInterval(tick);
         setNotifCountdown(null);
-        // Ask SW to show notification after 0ms (immediate)
-        navigator.serviceWorker.ready.then(sw => {
-          sw.active.postMessage({
-            type: 'SCHEDULE_NOTIFICATION',
-            delayMs: 100,
-            title: '아메쨩 💌 (테스트)',
-            body: msg,
-            tag: 'ame-test-notification'
+        
+        if (Capacitor.isNativePlatform()) {
+          LocalNotifications.schedule({
+            notifications: [
+              {
+                title: '아메쨩 💌 (테스트)',
+                body: msg,
+                id: Date.now(),
+                schedule: { at: new Date(Date.now() + 100) },
+                smallIcon: 'ic_stat_icon_config_sample'
+              }
+            ]
           });
-        });
+        } else {
+          // Web fallback
+          navigator.serviceWorker.ready.then(sw => {
+            sw.active.postMessage({
+              type: 'SCHEDULE_NOTIFICATION',
+              delayMs: 100,
+              title: '아메쨩 💌 (테스트)',
+              body: msg,
+              tag: 'ame-test-notification'
+            });
+          });
+        }
       } else {
         setNotifCountdown(count);
       }
@@ -207,12 +235,11 @@ export default function SettingsApp() {
               // ── Capacitor Native App (Android APK) ──
               if (Capacitor.isNativePlatform()) {
                 try {
-                  let permStatus = await PushNotifications.checkPermissions();
-                  if (permStatus.receive === 'prompt') {
-                    permStatus = await PushNotifications.requestPermissions();
+                  let permStatus = await LocalNotifications.checkPermissions();
+                  if (permStatus.display === 'prompt' || permStatus.display === 'prompt-with-rationale') {
+                    permStatus = await LocalNotifications.requestPermissions();
                   }
-                  if (permStatus.receive === 'granted') {
-                    await PushNotifications.register();
+                  if (permStatus.display === 'granted') {
                     alert('✅ 알림 권한이 허용되었습니다!');
                   } else {
                     alert('❌ 알림 권한이 거부되었습니다. 설정에서 직접 허용해 주세요.');
