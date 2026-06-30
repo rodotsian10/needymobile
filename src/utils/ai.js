@@ -70,7 +70,7 @@ export async function fetchAIChat(userMessage, chatHistory = [], petState = 'idl
       model: 'gpt-4o-mini',
       messages: formattedHistory,
       temperature: 0.9,
-      max_tokens: 150
+      max_tokens: 500
     };
 
     const response = await fetch(url, {
@@ -110,7 +110,7 @@ export async function fetchAIChat(userMessage, chatHistory = [], petState = 'idl
       contents: formattedHistory,
       generationConfig: {
         temperature: 0.9,
-        maxOutputTokens: 150,
+        maxOutputTokens: 500,
       }
     };
 
