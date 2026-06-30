@@ -185,8 +185,8 @@ export default function SettingsApp() {
         </div>
 
         {/* Notification Test */}
-        <div className="setting-item" style={{ backgroundColor: '#f0f8ff', border: '2px solid #4488ff' }}>
-          <span>알림 대사 큐 (잔여: {notificationQueue?.length ?? 0}개)</span>
+        <div className="setting-item" style={{ backgroundColor: (0,0,0,0), border: '0px solid #4488ff' }}>
+          <span>알림 테스트</span>
           <button
             className={`toggle-btn ${notifCountdown !== null ? 'off' : 'on'}`}
             onClick={handleNotifTest}

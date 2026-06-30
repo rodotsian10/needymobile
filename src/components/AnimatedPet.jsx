@@ -59,7 +59,11 @@ export default function AnimatedPet() {
     } else if (petAction === 'stream/27/0') {
       fps = 4; // Slow down ice cream eating
     } else if (petState === 'kangel') {
-      fps = currentFrames.length <= 4 ? 2 : 10; // Slow down small loops
+      if (petAction === 'stream/56/0') {
+        fps = 6; // Faster frame transition for phone
+      } else {
+        fps = currentFrames.length <= 4 ? 2 : 10; // Slow down small loops
+      }
     }
 
     const canvas = canvasRef.current;
@@ -70,7 +74,12 @@ export default function AnimatedPet() {
 
     const render = (time) => {
       const elapsed = time - lastTime;
-      const frameDuration = 1000 / fps;
+      let frameDuration = 1000 / fps;
+      
+      // Pause for 1 second on the last frame of the kiss motion
+      if (petAction === 'stream/24/1' && frameIdx === currentFrames.length - 1) {
+        frameDuration = 1000;
+      }
       
       if (elapsed > frameDuration) {
         lastTime = time;
