@@ -58,6 +58,7 @@ export default function App() {
 
   const [input, setInput] = useState('');
   const [isAiTyping, setIsAiTyping] = useState(false);
+  const [isAiResponding, setIsAiResponding] = useState(false); // true from first AI reply until last message shown
   const [isCooldown, setIsCooldown] = useState(false);
   const [jineTypingTimeout, setJineTypingTimeout] = useState(null);
   const prevJineActionRef = useRef(null);
@@ -256,9 +257,9 @@ export default function App() {
     }
   }, [isMusicPlaying]);
 
-  // When AI finishes typing, revert emotion motion back to base / music motion
+  // When ALL AI messages are displayed, revert emotion motion back to base / music motion
   useEffect(() => {
-    if (isAiTyping) return; // Only fire when AI stops
+    if (isAiResponding) return; // Still showing messages
     if (!currentEmotionActionRef.current) return; // No emotion motion was active
     currentEmotionActionRef.current = null;
 
@@ -276,7 +277,7 @@ export default function App() {
         prevJineActionRef.current = null;
       }
     }
-  }, [isAiTyping]);
+  }, [isAiResponding]);
 
   useEffect(() => {
     if (jineChatRef.current) {
@@ -378,6 +379,7 @@ export default function App() {
     playJineSendSound();
     
     setIsAiTyping(true);
+    setIsAiResponding(true);
     setIsCooldown(true);
     setTimeout(() => {
       setIsCooldown(false);
@@ -417,6 +419,7 @@ export default function App() {
       addJineMessage({ id: Date.now() + 1, text: error.message, sender: 'ame' });
     } finally {
       setIsAiTyping(false);
+      setIsAiResponding(false); // All messages shown → trigger motion revert
     }
   };
 
