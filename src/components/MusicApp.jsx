@@ -107,19 +107,27 @@ export default function MusicApp() {
 
       {/* Content Area */}
       <div style={{ position: 'absolute', top: '30px', left: '8px', right: '8px', bottom: '8px', backgroundColor: '#fff', display: 'flex', flexDirection: 'column', padding: '6px', gap: '6px', border: '2px inset #dfdfdf' }}>
-          {/* Album Art */}
-          <div style={{ width: '64px', height: '64px', backgroundColor: '#ccc', border: '1px solid #000080', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-            <img src={`/assets/images/music/${PLAYLIST[currentTrackIndex].cover}`} alt="album" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          
+          {/* Top Row: Album Art + Title/Artist */}
+          <div style={{ display: 'flex', flexDirection: 'row', gap: '10px', alignItems: 'flex-start' }}>
+            {/* Album Art */}
+            <div style={{ flexShrink: 0, width: '64px', height: '64px', backgroundColor: '#ccc', border: '1px solid #000080', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+              <img src={`/assets/images/music/${PLAYLIST[currentTrackIndex].cover}`} alt="album" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+
+            {/* Track Info */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden', minWidth: 0, height: '64px' }}>
+              <div style={{ color: '#5c22c7', fontFamily: 'PixelMplus10', fontSize: '16px', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {PLAYLIST[currentTrackIndex].title}
+              </div>
+              <div style={{ color: '#5c22c7', fontFamily: 'PixelMplus10', fontSize: '12px' }}>
+                Needy Streamer Overload
+              </div>
+            </div>
           </div>
 
-          {/* Track Info & Controls */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <div style={{ color: '#5c22c7', fontFamily: 'PixelMplus10', fontSize: '16px', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {PLAYLIST[currentTrackIndex].title}
-            </div>
-            <div style={{ color: '#5c22c7', fontFamily: 'PixelMplus10', fontSize: '12px', marginBottom: '8px' }}>
-              Needy Streamer Overload
-            </div>
+          {/* Bottom Area: Controls & Progress */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
             
             {/* Controls */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
