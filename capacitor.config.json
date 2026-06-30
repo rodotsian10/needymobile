@@ -1,0 +1,19 @@
+{
+  "appId": "com.doseos.amejine",
+  "appName": "DOSE OS",
+  "webDir": "dist",
+  "android": {
+    "allowMixedContent": true,
+    "backgroundColor": "#000000"
+  },
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon_config_sample",
+      "iconColor": "#5c22c7",
+      "sound": "beep.wav"
+    }
+  }
+}

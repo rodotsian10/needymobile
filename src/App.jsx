@@ -7,6 +7,8 @@ import NotepadApp from './components/NotepadApp';
 import MusicApp from './components/MusicApp';
 import './index.css';
 import { playOpenSound, playCloseSound, playExecuteSound, playJineSendSound, playTransformSound, stopTransformSound, playEndHaishinSound } from './utils/audio';
+import { Capacitor } from '@capacitor/core';
+import { PushNotifications } from '@capacitor/push-notifications';
 
 // Module-level flag: persists across StrictMode remounts, ensuring boot audio plays only once
 let _bootAudioStarted = false;

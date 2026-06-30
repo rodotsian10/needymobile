@@ -1,5 +1,7 @@
 import React from 'react';
 import useAppStore from '../store/useAppStore';
+import { PushNotifications } from '@capacitor/push-notifications';
+import { Capacitor } from '@capacitor/core';
 
 export default function SettingsApp() {
   const { settings, updateSettings, clearJineMessages, notificationQueue } = useAppStore();
@@ -202,18 +204,30 @@ export default function SettingsApp() {
           <button
             className="retro-btn"
             onClick={async () => {
-              if (window.ReactNativeWebView) {
-                // 앱(WebView) 환경일 경우 네이티브(Expo)로 권한 요청 메시지 전송
-                window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'REQUEST_NOTIFICATION_PERMISSION' }));
-                alert('앱 환경에서 알림 권한을 요청했습니다. 권한 창이 뜨면 허용해 주세요.');
+              // ── Capacitor Native App (Android APK) ──
+              if (Capacitor.isNativePlatform()) {
+                try {
+                  let permStatus = await PushNotifications.checkPermissions();
+                  if (permStatus.receive === 'prompt') {
+                    permStatus = await PushNotifications.requestPermissions();
+                  }
+                  if (permStatus.receive === 'granted') {
+                    await PushNotifications.register();
+                    alert('✅ 알림 권한이 허용되었습니다!');
+                  } else {
+                    alert('❌ 알림 권한이 거부되었습니다. 설정에서 직접 허용해 주세요.');
+                  }
+                } catch (e) {
+                  alert('알림 설정 중 오류가 발생했습니다: ' + e.message);
+                }
                 return;
               }
 
+              // ── Web Browser Fallback ──
               if (!('Notification' in window)) {
                 alert('이 브라우저는 푸시 알림을 지원하지 않습니다.');
                 return;
               }
-              
               if (Notification.permission === 'granted') {
                 alert('이미 알림 권한이 허용되어 있습니다.');
               } else if (Notification.permission === 'denied') {
@@ -226,7 +240,7 @@ export default function SettingsApp() {
             }}
             style={{ minWidth: '48px', padding: '2px 8px', fontSize: '12px' }}
           >
-            {('Notification' in window && Notification.permission === 'granted') ? '허용됨' : '허용하기'}
+            허용하기
           </button>
         </div>
 

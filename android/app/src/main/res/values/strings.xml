@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">DOSE OS</string>
+    <string name="title_activity_main">DOSE OS</string>
+    <string name="package_name">com.doseos.amejine</string>
+    <string name="custom_url_scheme">com.doseos.amejine</string>
+</resources>
