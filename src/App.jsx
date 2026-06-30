@@ -35,9 +35,9 @@ const BootScreen = () => {
         currentLine++;
       } else {
         clearInterval(interval);
-        setTimeout(finishBoot, 1200); // Wait a bit longer at the end
+        setTimeout(finishBoot, 1200);
       }
-    }, 600); // Slower typing to match sound length
+    }, 600);
 
     return () => clearInterval(interval);
   }, [finishBoot]);
@@ -290,31 +290,30 @@ export default function App() {
     }
   }, [jineMessages, isAiTyping, windows.jine.isOpen]);
 
-  // ── Service Worker Registration + Notification Permission ────────
+  // ── Service Worker Registration ──────────────────────────────────
   useEffect(() => {
     if (!isBooting && 'serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
-        .then(async reg => {
+        .then(reg => {
           swRef.current = reg;
           console.log('[SW] 등록 성공');
-
-          // Request notification permission right after SW registers
-          if ('Notification' in window && Notification.permission === 'default') {
-            try {
-              const perm = await Notification.requestPermission();
-              console.log('[Notification] 권한:', perm);
-            } catch (e) {
-              console.warn('[Notification] 권한 요청 실패:', e);
-            }
-          }
         })
         .catch(err => console.warn('[SW] 등록 실패:', err));
     }
   }, [isBooting]);
 
-  // ── Global interaction listener for Mobile BGM/Audio Autoplay unlock ──
-  // Mobile browsers block audio until user interacts. Grab the FIRST touch/click
-  // and try to play BGM. This is the only reliable way to unlock audio context.
+  // ── Mobile Keyboard Scroll Lock ──────────────────────────────────
+  useEffect(() => {
+    const preventScroll = () => {
+      if (window.scrollY > 0) {
+        window.scrollTo(0, 0);
+      }
+    };
+    window.addEventListener('scroll', preventScroll);
+    return () => window.removeEventListener('scroll', preventScroll);
+  }, []);
+
+  // ── Global interaction listener for Mobile BGM Autoplay ──────────
   useEffect(() => {
     const handleInteraction = () => {
       if (bgmRef.current && bgmRef.current.paused && settings.bgmEnabled && !isBooting && petState !== 'transforming' && petState !== 'transforming_dark') {

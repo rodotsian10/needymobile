@@ -202,10 +202,18 @@ export default function SettingsApp() {
           <button
             className="retro-btn"
             onClick={async () => {
-              if (!('Notification' in window)) {
-                alert('이 기기/브라우저는 푸시 알림을 지원하지 않습니다.');
+              if (window.ReactNativeWebView) {
+                // 앱(WebView) 환경일 경우 네이티브(Expo)로 권한 요청 메시지 전송
+                window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'REQUEST_NOTIFICATION_PERMISSION' }));
+                alert('앱 환경에서 알림 권한을 요청했습니다. 권한 창이 뜨면 허용해 주세요.');
                 return;
               }
+
+              if (!('Notification' in window)) {
+                alert('이 브라우저는 푸시 알림을 지원하지 않습니다.');
+                return;
+              }
+              
               if (Notification.permission === 'granted') {
                 alert('이미 알림 권한이 허용되어 있습니다.');
               } else if (Notification.permission === 'denied') {
@@ -218,7 +226,7 @@ export default function SettingsApp() {
             }}
             style={{ minWidth: '48px', padding: '2px 8px', fontSize: '12px' }}
           >
-            {('Notification' in window) && Notification.permission === 'granted' ? '허용됨' : '허용하기'}
+            {('Notification' in window && Notification.permission === 'granted') ? '허용됨' : '허용하기'}
           </button>
         </div>
 

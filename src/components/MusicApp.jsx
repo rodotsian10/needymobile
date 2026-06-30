@@ -29,7 +29,7 @@ export default function MusicApp() {
     return `${m}:${s}`;
   };
 
-  // Stop global BGM and sync music state when music app plays something
+  // Sync external state
   useEffect(() => {
     if (isPlaying) {
       updateSettings({ bgmEnabled: false });
@@ -37,78 +37,81 @@ export default function MusicApp() {
     setIsMusicPlaying(isPlaying);
   }, [isPlaying, updateSettings, setIsMusicPlaying]);
 
+  // Audio Lifecycle
+  useEffect(() => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+    }
+    const audio = audioRef.current;
+    
+    const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
+    const handleLoadedMetadata = () => setDuration(audio.duration);
+    const handleEnded = () => {
+      setCurrentTrackIndex(prev => (prev + 1) % PLAYLIST.length);
+    };
+
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, []);
+
+  // Handle Track Change
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.src = `/assets/audio/${PLAYLIST[currentTrackIndex].file}`;
+      if (isPlaying) {
+        audioRef.current.play().catch(e => {
+          console.warn('트랙 전환 재생 실패:', e);
+          setIsPlaying(false);
+        });
+      }
+    }
+  }, [currentTrackIndex]); // Only depends on track index
+
+  // Handle Play/Pause
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.play().catch(e => {
+          console.warn('재생 실패:', e);
+          setIsPlaying(false);
+        });
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isPlaying]);
+
+  // Handle Volume
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume / 100;
     }
   }, [volume]);
 
-  // Sync external state only, do not play() here for mobile compatibility
-  useEffect(() => {
-    if (!audioRef.current) return;
-    if (!isPlaying) {
-      audioRef.current.pause();
-    }
-    // If it is playing, the play() call was already made in the click handler
-  }, [isPlaying]);
-
   if (!isOpen) {
-    // When closed, stop playback
     if (isPlaying) setIsPlaying(false);
     return null;
   }
 
   const handlePlayPause = () => {
-    if (!isPlaying) {
-      setIsPlaying(true);
-      if (audioRef.current) {
-        audioRef.current.play().catch(e => {
-          console.warn('오디오 재생 실패:', e);
-          setIsPlaying(false);
-        });
-      }
-    } else {
-      setIsPlaying(false);
-      if (audioRef.current) audioRef.current.pause();
-    }
-  };
-
-  const handleStop = () => {
-    setIsPlaying(false);
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
-  };
-
-  const handleNext = () => {
-    const nextIndex = (currentTrackIndex + 1) % PLAYLIST.length;
-    setCurrentTrackIndex(nextIndex);
-    setIsPlaying(true);
-    if (audioRef.current) {
-      audioRef.current.src = `/assets/audio/${PLAYLIST[nextIndex].file}`;
-      audioRef.current.play().catch(e => {
-        console.warn('다음 곡 재생 실패:', e);
-        setIsPlaying(false);
-      });
-    }
+    setIsPlaying(!isPlaying);
   };
 
   const handlePrev = () => {
-    const prevIndex = (currentTrackIndex - 1 + PLAYLIST.length) % PLAYLIST.length;
-    setCurrentTrackIndex(prevIndex);
+    setCurrentTrackIndex((prev) => (prev - 1 + PLAYLIST.length) % PLAYLIST.length);
     setIsPlaying(true);
-    if (audioRef.current) {
-      audioRef.current.src = `/assets/audio/${PLAYLIST[prevIndex].file}`;
-      audioRef.current.play().catch(e => {
-        console.warn('이전 곡 재생 실패:', e);
-        setIsPlaying(false);
-      });
-    }
   };
 
-  const handleTrackEnded = () => {
-    handleNext();
+  const handleNext = () => {
+    setCurrentTrackIndex((prev) => (prev + 1) % PLAYLIST.length);
+    setIsPlaying(true);
   };
 
   return (
@@ -214,17 +217,6 @@ export default function MusicApp() {
             </div>
           </div>
       </div>
-
-      <audio 
-        ref={audioRef}
-        src={`/assets/audio/${PLAYLIST[currentTrackIndex].file}`}
-        onEnded={handleTrackEnded}
-        onTimeUpdate={(e) => setCurrentTime(e.target.currentTime)}
-        onLoadedMetadata={(e) => {
-          setDuration(e.target.duration);
-        }}
-        preload="metadata"
-      />
     </Rnd>
   );
 }
