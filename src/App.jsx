@@ -397,6 +397,14 @@ export default function App() {
 
         if (Capacitor.isNativePlatform()) {
           import('@capacitor/local-notifications').then(({ LocalNotifications }) => {
+            LocalNotifications.createChannel({
+              id: 'ame-jine-channel',
+              name: 'Ame Jine Notifications',
+              description: 'Notifications from Ame',
+              importance: 5,
+              visibility: 1
+            }).catch(() => {});
+
             LocalNotifications.schedule({
               notifications: [
                 {
@@ -404,7 +412,8 @@ export default function App() {
                   body: msg,
                   id: 999, // static ID for the away notification
                   schedule: { at: new Date(Date.now() + delayMs) },
-                  smallIcon: 'ic_launcher'
+                  smallIcon: 'ic_launcher',
+                  channelId: 'ame-jine-channel'
                 }
               ]
             });

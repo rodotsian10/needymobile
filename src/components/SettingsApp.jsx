@@ -60,14 +60,24 @@ export default function SettingsApp() {
         setNotifCountdown(null);
         
         if (Capacitor.isNativePlatform()) {
+          // Create channel (required for Android 8+)
+          LocalNotifications.createChannel({
+            id: 'ame-jine-channel',
+            name: 'Ame Jine Notifications',
+            description: 'Notifications from Ame',
+            importance: 5,
+            visibility: 1
+          }).catch(() => {});
+
           LocalNotifications.schedule({
             notifications: [
               {
                 title: '아메쨩 💌 (테스트)',
                 body: msg,
-                id: Date.now(),
+                id: Math.floor(Date.now() / 1000) % 2147483647, // MUST be 32-bit int
                 schedule: { at: new Date(Date.now() + 100) },
-                smallIcon: 'ic_launcher'
+                smallIcon: 'ic_launcher',
+                channelId: 'ame-jine-channel'
               }
             ]
           });
