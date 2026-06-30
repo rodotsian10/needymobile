@@ -384,16 +384,16 @@ export default function App() {
 
     const handleAwayNotification = () => {
       if (document.hidden) {
+        const currentSettings = useAppStore.getState().settings;
+        if (!currentSettings.notificationsEnabled) return;
+
         const queue = useAppStore.getState().notificationQueue;
-        const fallback = settings.menheraMode
+        const fallback = currentSettings.menheraMode
           ? '피짱 어디야ㅠ 왜 안와 나 버린거야'
           : '피짱~ 나 보고싶지 않아? 빨리 들어와ㅠ';
         
-        poppedMsg = queue.length > 0 ? queue[0] : null;
-        const msg = poppedMsg || fallback;
-        if (poppedMsg) useAppStore.getState().popNotification();
-
-        const delayMs = Math.floor(Math.random() * 60 * 60 * 1000) + 60 * 60 * 1000; // 1~2시간
+        const isMenhera = currentSettings.menheraMode;
+        const intervalMs = isMenhera ? 10 * 60 * 1000 : 60 * 60 * 1000; // 10분 or 1시간
 
         if (Capacitor.isNativePlatform()) {
           import('@capacitor/local-notifications').then(({ LocalNotifications }) => {
@@ -405,25 +405,34 @@ export default function App() {
               visibility: 1
             }).catch(() => {});
 
+            const notifsToSchedule = [];
+            for (let i = 1; i <= 10; i++) {
+              const qMsg = queue.length > i - 1 ? queue[i - 1] : fallback;
+              notifsToSchedule.push({
+                title: '아메쨩 💌',
+                body: qMsg,
+                id: 9990 + i, // 9991 ~ 10000
+                schedule: { at: new Date(Date.now() + intervalMs * i) },
+                smallIcon: 'ic_launcher',
+                channelId: 'ame-jine-channel'
+              });
+            }
+
             LocalNotifications.schedule({
-              notifications: [
-                {
-                  title: '아메쨩 💌',
-                  body: msg,
-                  id: 999, // static ID for the away notification
-                  schedule: { at: new Date(Date.now() + delayMs) },
-                  smallIcon: 'ic_launcher',
-                  channelId: 'ame-jine-channel'
-                }
-              ]
+              notifications: notifsToSchedule
             });
           });
         } else {
+          // Web fallback (only schedules 1 for simplicity)
+          poppedMsg = queue.length > 0 ? queue[0] : null;
+          const msg = poppedMsg || fallback;
+          if (poppedMsg) useAppStore.getState().popNotification();
+
           const sw = swRef.current;
           if (sw && sw.active) {
             sw.active.postMessage({
               type: 'SCHEDULE_NOTIFICATION',
-              delayMs,
+              delayMs: intervalMs,
               title: '아메쨩 💌',
               body: msg,
               tag: 'ame-away'
@@ -431,10 +440,14 @@ export default function App() {
           }
         }
       } else {
-        // Cancel the scheduled notification because user came back early
+        // Cancel the scheduled notifications because user came back early
         if (Capacitor.isNativePlatform()) {
           import('@capacitor/local-notifications').then(({ LocalNotifications }) => {
-            LocalNotifications.cancel({ notifications: [{ id: 999 }] });
+            const idsToCancel = [];
+            for (let i = 1; i <= 10; i++) {
+              idsToCancel.push({ id: 9990 + i });
+            }
+            LocalNotifications.cancel({ notifications: idsToCancel });
           });
         } else {
           const sw = swRef.current;
@@ -446,7 +459,7 @@ export default function App() {
           }
         }
         
-        // Put the message back into the queue
+        // Put the message back into the queue for web fallback
         if (poppedMsg) {
           useAppStore.getState().unshiftNotification(poppedMsg);
           poppedMsg = null;
@@ -456,7 +469,7 @@ export default function App() {
 
     document.addEventListener('visibilitychange', handleAwayNotification);
     return () => document.removeEventListener('visibilitychange', handleAwayNotification);
-  }, [settings.menheraMode]);
+  }, []);
 
   const handleSend = async () => {
     // Check both React state (for UI) and synchronous ref (for double-click/Enter spam)

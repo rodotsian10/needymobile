@@ -235,6 +235,17 @@ export default function SettingsApp() {
             {notifCountdown !== null ? notifCountdown : 'TEST'}
           </button>
         </div>
+
+        {/* Regular Notification Toggle */}
+        <div className="setting-item" >
+          <span>정기 알림 (백그라운드)</span>
+          <button 
+            className={`toggle-btn ${settings.notificationsEnabled ? 'on' : 'off'}`}
+            onClick={() => handleToggle('notificationsEnabled')}
+          >
+            {settings.notificationsEnabled ? 'ON' : 'OFF'}
+          </button>
+        </div>
         
         {/* Notification Permission Toggle */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#dfdfdf', padding: '6px' }}>
