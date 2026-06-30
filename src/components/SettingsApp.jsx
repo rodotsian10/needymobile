@@ -52,11 +52,24 @@ export default function SettingsApp() {
           </select>
         </div>
 
+        {/* Gemini API Key */}
+        <div className="setting-item col">
+          <span style={{ marginBottom: '5px' }}>JINE AI 채팅 API 키 (Gemini)</span>
+          <input 
+            type="password" 
+            className="setting-input" 
+            placeholder="AI Studio에서 발급받은 키 입력"
+            value={settings.apiKey || ''}
+            onChange={(e) => updateSettings({ apiKey: e.target.value })}
+            style={{ width: '100%', boxSizing: 'border-box' }}
+          />
+        </div>
+
         {/* Director App Visible Toggle */}
         <div className="setting-item" >
           <span>디렉터 바탕화면 아이콘 표시</span>
           <button 
-            className={`toggle-btn \${settings.directorEnabled ? 'on' : 'off'}`}
+            className={`toggle-btn ${settings.directorEnabled ? 'on' : 'off'}`}
             onClick={() => handleToggle('directorEnabled')}
             
           >

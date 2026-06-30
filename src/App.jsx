@@ -48,10 +48,11 @@ export default function App() {
   const { 
     isBooting, windows, 
     openWindow, closeWindow, focusWindow,
-    messages, addMessage,
+    jineMessages, addJineMessage,
     petState, petAction, setPetState, setPetAction, settings, updateSettings } = useAppStore();
 
   const [input, setInput] = useState('');
+  const [isAiTyping, setIsAiTyping] = useState(false);
 
   const AME_MOTIONS = [
     { label: '평온 (기본)', path: '0/0/0/0' },
@@ -165,15 +166,27 @@ export default function App() {
     document.documentElement.style.setProperty('--window-scale', (settings.windowScale || 100) / 100);
   }, [settings.windowScale]);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
-    addMessage({ id: Date.now(), text: input, sender: 'user' });
+  const handleSend = async () => {
+    if (!input.trim() || isAiTyping) return;
+    const userMsg = input.trim();
+    addJineMessage({ id: Date.now(), text: userMsg, sender: 'user' });
     setInput('');
-    const audio = new Audio('/assets/audio/jine_send_stamp.wav');
-    audio.play().catch(()=>{});
-    setTimeout(() => {
-      addMessage({ id: Date.now() + 1, text: "알았어!", sender: 'ame' });
-    }, 1000);
+    playJineSendSound();
+    
+    setIsAiTyping(true);
+    
+    try {
+      const { fetchGeminiChat } = await import('./utils/ai');
+      const response = await fetchGeminiChat(userMsg, jineMessages, petState);
+      
+      const audio = new Audio('/assets/audio/jine_send_stamp.wav');
+      audio.play().catch(()=>{});
+      addJineMessage({ id: Date.now() + 1, text: response, sender: 'ame' });
+    } catch (error) {
+      addJineMessage({ id: Date.now() + 1, text: `[시스템 에러] ${error.message}`, sender: 'ame' });
+    } finally {
+      setIsAiTyping(false);
+    }
   };
 
   const handleTransform = () => {
@@ -271,11 +284,16 @@ export default function App() {
           <button className="window-close-btn" style={{ right: '12px', top: '14px' }} onClick={() => { playCloseSound(); closeWindow('jine'); }}></button>
           <div className="window-content jine-content">
             <div className="jine-chat">
-              {messages.map(msg => (
+              {jineMessages && jineMessages.map(msg => (
                 <div key={msg.id} className={`jine-bubble ${msg.sender}`}>
                   {msg.text}
                 </div>
               ))}
+              {isAiTyping && (
+                <div className="jine-bubble ame" style={{ fontStyle: 'italic', opacity: 0.7 }}>
+                  입력 중...
+                </div>
+              )}
             </div>
             <div className="jine-input">
               <input 
