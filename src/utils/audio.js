@@ -52,6 +52,14 @@ export const stopBGM = () => {
 let transformAudioInstance = null;
 
 export const playTransformSound = () => {
+  // Check if music app is playing by checking active audio tags
+  const audios = document.querySelectorAll('audio');
+  for (let audio of audios) {
+    if (!audio.paused && audio.duration > 0) {
+      return; // Skip transformation sound if a song is playing
+    }
+  }
+
   const { settings } = useAppStore.getState();
   if (!settings.sfxEnabled) return;
 

@@ -185,12 +185,14 @@ export default function App() {
     if (settings.bgmTrack === 'desire.wav') targetVolume = Math.min((settings.volume / 100) * 0.8, 1);
     bgmRef.current.volume = targetVolume;
     
-    if (settings.bgmEnabled) {
+    const isTransforming = petState === 'transforming' || petState === 'transforming_dark';
+    
+    if (settings.bgmEnabled && !isTransforming) {
       bgmRef.current.play().catch(() => {});
     } else {
       bgmRef.current.pause();
     }
-  }, [settings.bgmEnabled, settings.volume]);
+  }, [settings.bgmEnabled, settings.volume, petState]);
 
     useEffect(() => {
     if (petState === 'kangel' || petState === 'idle') {
