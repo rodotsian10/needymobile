@@ -206,9 +206,10 @@ export default function App() {
   // ── Notification Queue: refill when low and online ───────────────
   useEffect(() => {
     if (isBooting || !settings.apiKey) return;
-    if (notificationQueue.length < 5 && navigator.onLine) {
+    if (notificationQueue.length < 10 && navigator.onLine) {
+      const fetchCount = 20 - notificationQueue.length;
       import('./utils/ai').then(({ fetchAiNotification }) => {
-        fetchAiNotification(settings.menheraMode, settings.apiKey, settings.apiProvider)
+        fetchAiNotification(settings.menheraMode, settings.apiKey, settings.apiProvider, fetchCount)
           .then(lines => {
             if (lines.length > 0) addNotifications(lines);
           });

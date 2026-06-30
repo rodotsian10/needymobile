@@ -93,7 +93,7 @@ const useAppStore = create(
       // Notification Queue (pre-generated AI lines stored offline)
       notificationQueue: [],
       addNotifications: (lines) => set((state) => ({
-        notificationQueue: [...state.notificationQueue, ...lines].slice(0, 15)
+        notificationQueue: [...state.notificationQueue, ...lines].slice(0, 20)
       })),
       popNotification: () => {
         let popped = null;

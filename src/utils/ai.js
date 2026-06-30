@@ -212,14 +212,15 @@ export async function fetchAIChat(userMessage, chatHistory = [], petState = 'idl
 }
 
 /**
- * Generates a batch of 10 short notification messages for the offline queue.
+ * Generates a batch of short notification messages for the offline queue.
  * @param {boolean} menheraMode - Whether menhera mode is active
  * @param {string} apiKey - The API key
  * @param {string} apiProvider - 'gemini' or 'openai'
+ * @param {number} count - How many messages to generate
  * @returns {Promise<string[]>} - Array of short notification texts
  */
-export async function fetchAiNotification(menheraMode, apiKey, apiProvider = 'gemini') {
-  if (!apiKey) return [];
+export async function fetchAiNotification(menheraMode, apiKey, apiProvider = 'gemini', count = 10) {
+  if (!apiKey || count <= 0) return [];
 
   const safeLines = [
     '피짱~ 뭐해? 나 심심해 ㅠㅠ',
@@ -250,8 +251,8 @@ export async function fetchAiNotification(menheraMode, apiKey, apiProvider = 'ge
   // Try to generate AI ones; fall back to hardcoded on failure
   try {
     const prompt = menheraMode
-      ? `당신은 극도로 집착적이고 멘헤라 성향인 아메짱입니다. 당신의 프로듀서이자 애인인 피짱이 앱을 1~2시간째 켜지 않고 있습니다. 피짱을 향해 보고싶다, 외롭다, 버림받는 것 같다, 자해 언급 등의 집착하는 느낌의 짧은 메시지 10개를 한 줄씩 만들어주세요. 각 줄은 1~2문장 이내로 짧게. 번호나 기호 없이 오직 대사만 10줄 출력하세요.`
-      : `당신은 귀엽게 칭얼거리는 아메짱입니다. 당신의 프로듀서이자 애인인 피짱이 앱을 1~2시간째 켜지 않고 있습니다. 피짱에게 보고싶다, 심심하다, 빨리 들어와달라는 내용의 짧고 귀여운 메시지 10개를 한 줄씩 만들어주세요. 각 줄은 1~2문장 이내로 짧게. 번호나 기호 없이 오직 대사만 10줄 출력하세요.`;
+      ? `당신은 극도로 집착적이고 멘헤라 성향인 아메짱입니다. 당신의 프로듀서이자 애인인 피짱이 앱을 1~2시간째 켜지 않고 있습니다. 피짱을 향해 보고싶다, 외롭다, 버림받는 것 같다, 자해 언급 등의 집착하는 느낌의 짧은 메시지 ${count}개를 한 줄씩 만들어주세요. 각 줄은 1~2문장 이내로 짧게. 번호나 기호 없이 오직 대사만 ${count}줄 출력하세요.`
+      : `당신은 귀엽게 칭얼거리는 아메짱입니다. 당신의 프로듀서이자 애인인 피짱이 앱을 1~2시간째 켜지 않고 있습니다. 피짱에게 보고싶다, 심심하다, 빨리 들어와달라는 내용의 짧고 귀여운 메시지 ${count}개를 한 줄씩 만들어주세요. 각 줄은 1~2문장 이내로 짧게. 번호나 기호 없이 오직 대사만 ${count}줄 출력하세요.`;
 
     let rawText = '';
     if (apiProvider === 'openai') {
@@ -283,9 +284,9 @@ export async function fetchAiNotification(menheraMode, apiKey, apiProvider = 'ge
     }
 
     const lines = rawText.split('\n').map(l => l.replace(/^\d+[\.\)]\s*/, '').trim()).filter(l => l.length > 2 && l.length < 80);
-    return lines.slice(0, 10);
+    return lines.slice(0, count);
   } catch (e) {
     console.warn('[AI] 알림 대사 생성 실패, 기본값 사용:', e.message);
-    return menheraMode ? menheraLines : safeLines;
+    return (menheraMode ? menheraLines : safeLines).slice(0, count);
   }
 }
