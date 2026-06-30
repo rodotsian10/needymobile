@@ -82,18 +82,29 @@ export default function MusicApp() {
   };
 
   const handleNext = () => {
-    setCurrentTrackIndex((prev) => (prev + 1) % PLAYLIST.length);
+    const nextIndex = (currentTrackIndex + 1) % PLAYLIST.length;
+    setCurrentTrackIndex(nextIndex);
     setIsPlaying(true);
-    // Play immediately after state update is queued. The audio src won't update until next render,
-    // so we set a tiny timeout to ensure it plays the NEW track synchronously enough for some browsers,
-    // or better, we wait for loadedmetadata or use a separate effect that is triggered by a ref.
-    // Actually, setting play() here might play the OLD track if src hasn't updated. 
-    // To fix, we can just let onLoadedData or onCanPlay play it if isPlaying is true.
+    if (audioRef.current) {
+      audioRef.current.src = `/assets/audio/${PLAYLIST[nextIndex].file}`;
+      audioRef.current.play().catch(e => {
+        console.warn('다음 곡 재생 실패:', e);
+        setIsPlaying(false);
+      });
+    }
   };
 
   const handlePrev = () => {
-    setCurrentTrackIndex((prev) => (prev - 1 + PLAYLIST.length) % PLAYLIST.length);
+    const prevIndex = (currentTrackIndex - 1 + PLAYLIST.length) % PLAYLIST.length;
+    setCurrentTrackIndex(prevIndex);
     setIsPlaying(true);
+    if (audioRef.current) {
+      audioRef.current.src = `/assets/audio/${PLAYLIST[prevIndex].file}`;
+      audioRef.current.play().catch(e => {
+        console.warn('이전 곡 재생 실패:', e);
+        setIsPlaying(false);
+      });
+    }
   };
 
   const handleTrackEnded = () => {
@@ -211,12 +222,6 @@ export default function MusicApp() {
         onTimeUpdate={(e) => setCurrentTime(e.target.currentTime)}
         onLoadedMetadata={(e) => {
           setDuration(e.target.duration);
-          if (isPlaying) {
-            e.target.play().catch(err => {
-              console.warn('트랙 전환 시 오디오 재생 실패:', err);
-              setIsPlaying(false);
-            });
-          }
         }}
         preload="metadata"
       />

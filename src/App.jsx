@@ -11,10 +11,14 @@ import { playOpenSound, playCloseSound, playExecuteSound, playJineSendSound, pla
 const BootScreen = () => {
   const { finishBoot } = useAppStore();
   const [text, setText] = useState('');
+  const audioPlayedRef = useRef(false);
   
   useEffect(() => {
-    const audio = new Audio('/assets/audio/boot.wav');
-    audio.play().catch(() => {});
+    if (!audioPlayedRef.current) {
+      const audio = new Audio('/assets/audio/boot.wav');
+      audio.play().catch(() => {});
+      audioPlayedRef.current = true;
+    }
 
     const lines = [
       'DOSE OS (C) 2026',
@@ -31,9 +35,9 @@ const BootScreen = () => {
         currentLine++;
       } else {
         clearInterval(interval);
-        setTimeout(finishBoot, 1000);
+        setTimeout(finishBoot, 1200); // Wait a bit longer at the end
       }
-    }, 500);
+    }, 600); // Slower typing to match sound length
 
     return () => clearInterval(interval);
   }, [finishBoot]);

@@ -518,3 +518,25 @@ body, html, #root {
   padding-left: 10px;
   color: #666;
 }
+
+/* ── Mobile Fullscreen Override ── */
+@media (max-width: 600px) {
+  .desktop {
+    transform: none !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    overflow: hidden !important;
+  }
+  .os-window {
+    transform: none !important;
+    width: 100% !important;
+    height: 100% !important;
+    top: 0 !important;
+    left: 0 !important;
+    border: none;
+    z-index: 9999 !important;
+  }
+  .window-drag-area {
+    display: none !important;
+  }
+}
