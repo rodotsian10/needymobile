@@ -21,6 +21,8 @@ const useAppStore = create(
         directorEnabled: false,
         autoMotionEnabled: true,
         windowScale: 100,
+        apiKey: '',
+        apiProvider: 'gemini',
       },
       
       // Notepad State
@@ -80,11 +82,11 @@ const useAppStore = create(
       }),
 
       // JINE Messages
-      messages: [
+      jineMessages: [
         { id: 1, text: "초텐쨩 최고다!", sender: "user" },
         { id: 2, text: "당연하지! 승인욕구 몬스터니까!", sender: "ame" }
       ],
-      addMessage: (msg) => set((state) => ({ messages: [...state.messages, msg] })),
+      addJineMessage: (msg) => set((state) => ({ jineMessages: [...state.jineMessages, msg] })),
       
       // Status
       stress: 50,
@@ -109,12 +111,16 @@ const useAppStore = create(
         if (typeof persistedState.notes === 'string') {
           persistedState.notes = [];
         }
+        // Migration: map old messages to jineMessages if jineMessages doesn't exist
+        if (persistedState.messages && !persistedState.jineMessages) {
+          persistedState.jineMessages = persistedState.messages;
+        }
         return { ...currentState, ...persistedState };
       },
       partialize: (state) => ({
         settings: state.settings,
         notes: state.notes,
-        messages: state.messages,
+        jineMessages: state.jineMessages,
         affection: state.affection,
         stress: state.stress
       }),
