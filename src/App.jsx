@@ -8,17 +8,35 @@ import MusicApp from './components/MusicApp';
 import './index.css';
 import { playOpenSound, playCloseSound, playExecuteSound, playJineSendSound, playTransformSound, stopTransformSound, playEndHaishinSound } from './utils/audio';
 
+// Module-level flag: persists across StrictMode remounts, ensuring boot audio plays only once
+let _bootAudioStarted = false;
+
 const BootScreen = () => {
   const { finishBoot } = useAppStore();
   const [text, setText] = useState('');
   const audioRef = useRef(null);
-  const audioPlayedRef = useRef(false);
+  const finishedTypingRef = useRef(false);
   
   useEffect(() => {
-    if (!audioPlayedRef.current) {
-      audioRef.current = new Audio('/assets/audio/boot.wav');
-      audioRef.current.play().catch(() => {});
-      audioPlayedRef.current = true;
+    // Module-level flag prevents double-play in React StrictMode (which remounts components in dev)
+    if (!_bootAudioStarted) {
+      _bootAudioStarted = true;
+      const audio = new Audio('/assets/audio/boot.wav');
+      audioRef.current = audio;
+
+      // Wait for audio to fully finish before transitioning
+      audio.addEventListener('ended', () => {
+        if (finishedTypingRef.current) {
+          finishBoot();
+        } else {
+          finishedTypingRef.current = 'audio_done';
+        }
+      });
+
+      audio.play().catch(() => {
+        // Autoplay blocked: fall through to typing-based finish
+        finishedTypingRef.current = 'audio_done';
+      });
     }
 
     const lines = [
@@ -36,7 +54,12 @@ const BootScreen = () => {
         currentLine++;
       } else {
         clearInterval(interval);
-        setTimeout(finishBoot, 1200);
+        // Typing done — only finish if audio is also done
+        if (finishedTypingRef.current === 'audio_done') {
+          finishBoot();
+        } else {
+          finishedTypingRef.current = true;
+        }
       }
     }, 600);
 

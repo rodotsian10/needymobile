@@ -61,21 +61,28 @@ export default function MusicApp() {
     };
   }, []);
 
-  // Handle Track Change
+  const skipPlayRef = useRef(false);
+
+  // Handle Track Change — set new src and play if needed
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.src = `/assets/audio/${PLAYLIST[currentTrackIndex].file}`;
       if (isPlaying) {
+        skipPlayRef.current = true; // Tell isPlaying effect to skip this round
         audioRef.current.play().catch(e => {
           console.warn('트랙 전환 재생 실패:', e);
           setIsPlaying(false);
         });
       }
     }
-  }, [currentTrackIndex]); // Only depends on track index
+  }, [currentTrackIndex]);
 
-  // Handle Play/Pause
+  // Handle Play/Pause — skip if track change already handled it
   useEffect(() => {
+    if (skipPlayRef.current) {
+      skipPlayRef.current = false;
+      return;
+    }
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.play().catch(e => {
